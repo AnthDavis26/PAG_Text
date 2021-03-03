@@ -2,7 +2,7 @@
 
 A text-based concept for a game idea I had, called Post-Apocalypse George. Made with C++ to expand my knowledge.
 
-For this project, I wanted to start with the following as its foundation:
+For this project, I will start with the following as its foundation:
   - Save files
   - Level navigation (fast travel)
   - Dynamic command recognition and responses
