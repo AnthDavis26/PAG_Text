@@ -1,15 +1,29 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include "SaveFileInterface.h"
 
 const std::string S_SAVE_PATH = ".\\Saves\\";
 const std::string S_SAVE_FILE = "SAV";
 
 // Prototypes
-void SetByteAt(std::string path, std::string filename, int byte, int addr);
 void InitFiles();
 
-void InitFiles() 
+int main()
+{
+    InitFiles();
+
+    SaveFileInterface sfi;
+
+    // Create a test save file
+    sfi.SetByteAt(S_SAVE_PATH, S_SAVE_FILE, 0xAB, 0x23);
+    sfi.OrByteAt(S_SAVE_PATH, S_SAVE_FILE, 0x13, 0x23);
+    sfi.OrByteAt(S_SAVE_PATH, S_SAVE_FILE, 0x02, 0x1A);
+    sfi.ANDByteAt(S_SAVE_PATH, S_SAVE_FILE, 0x07, 0x23);
+}
+
+
+void InitFiles()
 {
     std::ofstream file;
 
@@ -21,29 +35,4 @@ void InitFiles()
         file.open(S_SAVE_PATH + S_SAVE_FILE, std::ios::out | std::ios::binary);
         file.close();
     }
-}
-
-// byte range [0, 255]
-void SetByteAt(std::string path, std::string filename, int byte, int addr)
-{
-    std::ofstream file;
-    path += filename;
-
-    if (std::filesystem::exists(path))
-        file.open(path, std::ios::in | std::ios::out | std::ios::binary);
-    else
-        file.open(path, std::ios::out | std::ios::binary);
-
-    file.seekp(addr);
-    file.put(byte);
-
-    file.close();
-}
-
-int main()
-{
-    InitFiles();
-
-    // Create a test save file
-    SetByteAt(S_SAVE_PATH, S_SAVE_FILE, 0xAF, 0x23);
 }
