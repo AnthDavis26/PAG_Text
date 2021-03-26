@@ -15,6 +15,5 @@ SaveFile testsave(S_SAVE_PATH, S_SAVE_FILE);
 // Flow
 int main()
 {
-	testsave.Reset();
-	testsave.ANDByteAt(0x1F, 0x123);
+	testsave.SetByteAt(0x1F, 0x123);
 }
