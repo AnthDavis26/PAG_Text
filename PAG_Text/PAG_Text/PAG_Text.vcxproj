@@ -141,10 +141,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="PAG_Text.cpp" />
-    <ClCompile Include="SaveFileInterface.cpp" />
+    <ClCompile Include="SaveFile.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SaveFileInterface.h" />
+    <ClInclude Include="SaveFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
