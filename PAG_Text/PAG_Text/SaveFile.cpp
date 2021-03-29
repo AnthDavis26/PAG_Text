@@ -6,12 +6,21 @@ SaveFile::SaveFile(std::string directory, std::string filename)
     this->directory = directory;
     this->filename = filename;
     this->fullpath = directory + filename;
+
+    OpenFile();
+    file.close();
 }
 
 std::string SaveFile::GetFullPath()
 {
     return fullpath;
 }
+
+std::string SaveFile::GetDirectory()
+{
+    return directory;
+}
+
 
 // byte range [0, 255]
 void SaveFile::SetByteAt(int byte, int addr)
@@ -25,8 +34,15 @@ void SaveFile::SetByteAt(int byte, int addr)
 void SaveFile::ORByteAt(int byte, int addr)
 {
     OpenFile();
-    file.seekg(addr);
-    byte |= file.get();
+
+    if (addr > std::filesystem::file_size(fullpath))
+        std::filesystem::resize_file(fullpath, addr);
+    else
+    {
+        file.seekg(addr);
+        byte |= file.get();
+    }
+
     file.seekp(addr);
     file.put(byte);
     file.close();
@@ -35,10 +51,16 @@ void SaveFile::ORByteAt(int byte, int addr)
 void SaveFile::ANDByteAt(int byte, int addr)
 {
     OpenFile();
-    file.seekg(addr);
-    byte &= file.get();
-    file.seekp(addr);
-    file.put(byte);
+    if (addr > std::filesystem::file_size(fullpath))
+        std::filesystem::resize_file(fullpath, addr);
+    else
+    {
+        file.seekg(addr);
+        byte &= file.get();
+        file.seekp(addr);
+        file.put(byte);
+    }
+
     file.close();
 }
 
@@ -54,15 +76,10 @@ void SaveFile::UnsetBitAt(int bitpos, int addr)
 
 void SaveFile::Reset()
 {
-    if (std::filesystem::exists(fullpath))
-        file.open(fullpath, std::ios::out | std::ios::binary);
-    else
-    {
+    if (!std::filesystem::exists(fullpath))
         std::filesystem::create_directory(directory);
-        file.open(fullpath, std::ios::out | std::ios::binary);
-    }
-
-    file.put(0);
+    
+    file.open(fullpath, std::ios::out | std::ios::binary);
     file.close();
 }
 
@@ -76,4 +93,10 @@ void SaveFile::OpenFile()
         std::filesystem::create_directory(directory);
         file.open(fullpath, std::ios::out | std::ios::binary);
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const SaveFile& sf)
+{
+    os << sf.fullpath;
+    return os;
 }

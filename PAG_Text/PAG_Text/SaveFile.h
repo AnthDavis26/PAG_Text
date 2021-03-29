@@ -9,8 +9,12 @@ public:
 
 	// Accessors
 	std::string GetFullPath();
+	std::string GetDirectory();
 
 	// Mutators
+
+	// Operator Overloads
+	friend std::ostream& operator<<(std::ostream& os, const SaveFile& sf);
 
 	// Byte Operations
 	void SetByteAt(int byte, int addr);
@@ -22,7 +26,7 @@ public:
 
 private:
 	void OpenFile();
-
+	
 	std::string directory;
 	std::string filename;
 	std::string fullpath;
