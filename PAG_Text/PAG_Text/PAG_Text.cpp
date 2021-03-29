@@ -12,17 +12,17 @@ const std::string S_DEFAULT_SAVE_NAME = "SAVEFILE";
 const std::string S_SAVE_EXTENSION = ".sav";
 
 // Global Variables
-int savefilenumber = 0;
+int saveFileNumber = 0;
 
 // Global Objects
-std::vector<SaveFile> savefiles;
+std::vector<SaveFile> saveFiles;
 //SaveFile testsave(S_SAVE_DIRECTORY, S_SAVE_NAME);
 
 // Prototypes
 void InitializeSaveFiles();
 void PrintSaveFiles();
 void PromptCreateSaveFile();
-void CreateSaveFile(std::string filename);
+void CreateSaveFile(std::string fileName);
 
 // Flow
 int main()
@@ -35,11 +35,11 @@ int main()
 
 void PrintSaveFiles()
 {
-	if (savefiles.size() <= 0)
+	if (saveFiles.size() <= 0)
 		std::cout << "No save files found." << std::endl;
 	else
 	{
-		for (const auto& x : savefiles)
+		for (const auto& x : saveFiles)
 			std::cout << x << std::endl;
 	}
 }
@@ -47,24 +47,24 @@ void PrintSaveFiles()
 // TODO: Prompt overwrite option if file name exists
 void PromptCreateSaveFile()
 {
-	std::string filename = "";
+	std::string fileName = "";
 
 	std::cout << "Save Name: ";
-	std::getline(std::cin, filename);
+	std::getline(std::cin, fileName);
 
-	filename = filename.substr(0, I_MAX_SAVE_NAME_LENGTH);
+	fileName = fileName.substr(0, I_MAX_SAVE_NAME_LENGTH);
 
-	std::cout << filename;
+	std::cout << fileName;
 
-	if (filename == "")
-		filename = S_DEFAULT_SAVE_NAME + std::to_string(savefilenumber);
+	if (fileName == "")
+		fileName = S_DEFAULT_SAVE_NAME + std::to_string(saveFileNumber);
 
-	CreateSaveFile(filename);
+	CreateSaveFile(fileName);
 }
 
-void CreateSaveFile(std::string filename)
+void CreateSaveFile(std::string fileName)
 {
-	savefiles.push_back(SaveFile(S_SAVE_DIRECTORY, filename+S_SAVE_EXTENSION));
+	saveFiles.push_back(SaveFile(S_SAVE_DIRECTORY, fileName+S_SAVE_EXTENSION));
 }
 
 void InitializeSaveFiles()
@@ -72,12 +72,12 @@ void InitializeSaveFiles()
 	// Search for and add list of files
 	for (const auto& entry : std::filesystem::directory_iterator(S_SAVE_DIRECTORY))
 	{
-		std::string filename = std::filesystem::path(entry).filename().string();
+		std::string fileName = std::filesystem::path(entry).fileName().string();
 
-		if (filename.starts_with(S_DEFAULT_SAVE_NAME) && filename.ends_with(S_SAVE_EXTENSION))
-			savefilenumber++;
+		if (fileName.starts_with(S_DEFAULT_SAVE_NAME) && fileName.ends_with(S_SAVE_EXTENSION))
+			saveFileNumber++;
 
-		if (filename.ends_with(S_SAVE_EXTENSION))
-			savefiles.push_back(SaveFile(S_SAVE_DIRECTORY, filename));
+		if (fileName.ends_with(S_SAVE_EXTENSION))
+			saveFiles.push_back(SaveFile(S_SAVE_DIRECTORY, fileName));
 	}
 }

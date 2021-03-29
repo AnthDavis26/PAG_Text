@@ -1,11 +1,11 @@
 #include "SaveFile.h"
 #include <filesystem>
 
-SaveFile::SaveFile(std::string directory, std::string filename)
+SaveFile::SaveFile(std::string directory, std::string fileName)
 {
     this->directory = directory;
-    this->filename = filename;
-    this->fullpath = directory + filename;
+    this->fileName = fileName;
+    this->fullPath = directory + fileName;
 
     OpenFile();
     file.close();
@@ -13,7 +13,7 @@ SaveFile::SaveFile(std::string directory, std::string filename)
 
 std::string SaveFile::GetFullPath()
 {
-    return fullpath;
+    return fullPath;
 }
 
 std::string SaveFile::GetDirectory()
@@ -35,8 +35,8 @@ void SaveFile::ORByteAt(int byte, int addr)
 {
     OpenFile();
 
-    if (addr > std::filesystem::file_size(fullpath))
-        std::filesystem::resize_file(fullpath, addr);
+    if (addr > std::filesystem::file_size(fullPath))
+        std::filesystem::resize_file(fullPath, addr);
     else
     {
         file.seekg(addr);
@@ -51,8 +51,8 @@ void SaveFile::ORByteAt(int byte, int addr)
 void SaveFile::ANDByteAt(int byte, int addr)
 {
     OpenFile();
-    if (addr > std::filesystem::file_size(fullpath))
-        std::filesystem::resize_file(fullpath, addr);
+    if (addr > std::filesystem::file_size(fullPath))
+        std::filesystem::resize_file(fullPath, addr);
     else
     {
         file.seekg(addr);
@@ -76,27 +76,27 @@ void SaveFile::UnsetBitAt(int bitpos, int addr)
 
 void SaveFile::Reset()
 {
-    if (!std::filesystem::exists(fullpath))
+    if (!std::filesystem::exists(fullPath))
         std::filesystem::create_directory(directory);
     
-    file.open(fullpath, std::ios::out | std::ios::binary);
+    file.open(fullPath, std::ios::out | std::ios::binary);
     file.close();
 }
 
 void SaveFile::OpenFile()
 {
     // Modify file if it exists, otherwise create file
-    if (std::filesystem::exists(fullpath))
-        file.open(fullpath, std::ios::in | std::ios::out | std::ios::binary);
+    if (std::filesystem::exists(fullPath))
+        file.open(fullPath, std::ios::in | std::ios::out | std::ios::binary);
     else
     {
         std::filesystem::create_directory(directory);
-        file.open(fullpath, std::ios::out | std::ios::binary);
+        file.open(fullPath, std::ios::out | std::ios::binary);
     }
 }
 
 std::ostream& operator<<(std::ostream& os, const SaveFile& sf)
 {
-    os << sf.fullpath;
+    os << sf.fullPath;
     return os;
 }

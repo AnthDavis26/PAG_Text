@@ -5,7 +5,7 @@
 class SaveFile
 {
 public:
-	SaveFile(std::string directory, std::string filename);
+	SaveFile(std::string directory, std::string fileName);
 
 	// Accessors
 	std::string GetFullPath();
@@ -28,8 +28,8 @@ private:
 	void OpenFile();
 	
 	std::string directory;
-	std::string filename;
-	std::string fullpath;
+	std::string fileName;
+	std::string fullPath;
 	std::fstream file;
 };
 
