@@ -1,12 +1,20 @@
 #include "SaveFile.h"
 #include <filesystem>
 
+SaveFile::SaveFile(std::string directory)
+{
+    this->directory = directory;
+    this->fileName = "";
+    this->fullPath = directory;
+    OpenFile();
+    file.close();
+}
+
 SaveFile::SaveFile(std::string directory, std::string fileName)
 {
     this->directory = directory;
     this->fileName = fileName;
     this->fullPath = directory + fileName;
-
     OpenFile();
     file.close();
 }
@@ -21,6 +29,10 @@ std::string SaveFile::GetDirectory()
     return directory;
 }
 
+std::string SaveFile::GetFileName()
+{
+    return fileName;
+}
 
 // byte range [0, 255]
 void SaveFile::SetByteAt(int byte, int addr)
@@ -51,6 +63,7 @@ void SaveFile::ORByteAt(int byte, int addr)
 void SaveFile::ANDByteAt(int byte, int addr)
 {
     OpenFile();
+
     if (addr > std::filesystem::file_size(fullPath))
         std::filesystem::resize_file(fullPath, addr);
     else

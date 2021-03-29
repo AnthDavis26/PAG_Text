@@ -3,26 +3,30 @@
 #include <filesystem>
 #include <fstream>
 #include "SaveFile.h"
+#include <regex>
 
 // Global Constants
-const int I_MAX_SAVES = INT_MAX; 
-const int I_MAX_SAVE_NAME_LENGTH = 30;
-const std::string S_SAVE_DIRECTORY = ".\\Saves\\";
-const std::string S_DEFAULT_SAVE_NAME = "SAVEFILE";
-const std::string S_SAVE_EXTENSION = ".sav";
+const int SAVES_MAX = INT_MAX; 
+const int SAVE_NAME_LENGTH = 30;
+const std::string SAVE_DIRECTORY = ".\\Saves\\";
+const std::string SAVE_NAME_DEFAULT = "SAVEFILE_";
+const std::string SAVE_EXTENSION = ".sav";
 
 // Global Variables
-int saveFileNumber = 0;
 
 // Global Objects
 std::vector<SaveFile> saveFiles;
-//SaveFile testsave(S_SAVE_DIRECTORY, S_SAVE_NAME);
+SaveFile currentSave(SAVE_DIRECTORY);
 
 // Prototypes
 void InitializeSaveFiles();
 void PrintSaveFiles();
 void PromptCreateSaveFile();
 void CreateSaveFile(std::string fileName);
+void CreateDefaultFile();
+std::string ToLowercase(std::string str);
+std::string ToUppercase(std::string str);
+int ExtractDigits(std::string str);
 
 // Flow
 int main()
@@ -39,45 +43,109 @@ void PrintSaveFiles()
 		std::cout << "No save files found." << std::endl;
 	else
 	{
-		for (const auto& x : saveFiles)
-			std::cout << x << std::endl;
+		for (int i = 0; i < saveFiles.size(); i++)
+			std::cout << i+1 << ". " << saveFiles[i].GetFileName() << std::endl;
 	}
 }
 
-// TODO: Prompt overwrite option if file name exists
 void PromptCreateSaveFile()
 {
+	// Prompt for input
 	std::string fileName = "";
-
 	std::cout << "Save Name: ";
 	std::getline(std::cin, fileName);
+	fileName = fileName.substr(0, SAVE_NAME_LENGTH);
 
-	fileName = fileName.substr(0, I_MAX_SAVE_NAME_LENGTH);
-
-	std::cout << fileName;
+	// TODO: Prompt overwrite option if file name exists, case-insensitive
 
 	if (fileName == "")
-		fileName = S_DEFAULT_SAVE_NAME + std::to_string(saveFileNumber);
-
-	CreateSaveFile(fileName);
+		CreateDefaultFile();
+	else
+		CreateSaveFile(fileName);
 }
 
 void CreateSaveFile(std::string fileName)
 {
-	saveFiles.push_back(SaveFile(S_SAVE_DIRECTORY, fileName+S_SAVE_EXTENSION));
+	saveFiles.push_back(SaveFile(SAVE_DIRECTORY, fileName+SAVE_EXTENSION));
+}
+
+void CreateDefaultFile()
+{
+	std::regex pattern("(" + SAVE_NAME_DEFAULT + ")([0-9])*(" + SAVE_EXTENSION + ")");
+	int maxNumber = 0;
+	int num = 0;
+
+	// Look for files with default naming pattern
+	for (int i = 0; i < saveFiles.size(); i++)
+	{
+		if (std::regex_match(saveFiles[i].GetFileName(), pattern))
+		{
+			num = ExtractDigits(saveFiles[i].GetFileName());
+
+			if (i > 0 && std::regex_match(saveFiles[i - 1].GetFileName(), pattern))
+			{
+				int num2 = ExtractDigits(saveFiles[i - 1].GetFileName());
+
+				// Fill gaps between save files (e.g. create SAVEFILE_1
+				// between SAVEFILE_0, SAVEFILE_4)
+				if (num - num2 > 1)
+				{
+					maxNumber = num2;
+					break;
+				}
+			}
+
+			if (num > maxNumber)
+				maxNumber = num;
+		}
+
+		maxNumber++;
+	}
+
+	CreateSaveFile(SAVE_NAME_DEFAULT + std::to_string(maxNumber));
+}
+
+std::string ToLowercase(std::string str)
+{
+	std::string result = "";
+
+	for (const char x : str)
+		result += std::tolower(x);
+
+	return result;
+}
+
+std::string ToUppercase(std::string str)
+{
+	std::string result = "";
+
+	for (const char x : str)
+		result += std::toupper(x);
+
+	return result;
+}
+
+int ExtractDigits(std::string str)
+{
+	std::string result = "";
+
+	for (const char x : str)
+	{
+		if (std::isdigit(x))
+			result += x;
+	}
+
+	return std::stoi(result);
 }
 
 void InitializeSaveFiles()
 {
 	// Search for and add list of files
-	for (const auto& entry : std::filesystem::directory_iterator(S_SAVE_DIRECTORY))
+	for (const auto& entry : std::filesystem::directory_iterator(SAVE_DIRECTORY))
 	{
 		std::string fileName = std::filesystem::path(entry).filename().string();
 
-		if (fileName.starts_with(S_DEFAULT_SAVE_NAME) && fileName.ends_with(S_SAVE_EXTENSION))
-			saveFileNumber++;
-
-		if (fileName.ends_with(S_SAVE_EXTENSION))
-			saveFiles.push_back(SaveFile(S_SAVE_DIRECTORY, fileName));
+		if (fileName.ends_with(SAVE_EXTENSION))
+			saveFiles.push_back(SaveFile(SAVE_DIRECTORY, fileName));
 	}
 }

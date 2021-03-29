@@ -5,11 +5,13 @@
 class SaveFile
 {
 public:
+	SaveFile(std::string directory);
 	SaveFile(std::string directory, std::string fileName);
 
 	// Accessors
-	std::string GetFullPath();
+	std::string GetFileName();
 	std::string GetDirectory();
+	std::string GetFullPath();
 
 	// Mutators
 
