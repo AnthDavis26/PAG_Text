@@ -72,7 +72,7 @@ void InitializeSaveFiles()
 	// Search for and add list of files
 	for (const auto& entry : std::filesystem::directory_iterator(S_SAVE_DIRECTORY))
 	{
-		std::string fileName = std::filesystem::path(entry).fileName().string();
+		std::string fileName = std::filesystem::path(entry).filename().string();
 
 		if (fileName.starts_with(S_DEFAULT_SAVE_NAME) && fileName.ends_with(S_SAVE_EXTENSION))
 			saveFileNumber++;
