@@ -90,16 +90,18 @@ void CreateDefaultFile()
 				// between SAVEFILE_0, SAVEFILE_4)
 				if (num - num2 > 1)
 				{
-					maxNumber = num2;
+					maxNumber = num2 + 1;
 					break;
 				}
 			}
+			else if (i > 0 && num > 0)
+				break;
 
 			if (num > maxNumber)
 				maxNumber = num;
+			else if (num == maxNumber)
+				maxNumber++;
 		}
-
-		maxNumber++;
 	}
 
 	CreateSaveFile(SAVE_NAME_DEFAULT + std::to_string(maxNumber));
