@@ -1,4 +1,5 @@
 ## Post-Apocalypse George (text game)
+(NOTE: Compatible on Win10 only, no plans for portability.)
 
 A text-based concept for a game idea I had, called Post-Apocalypse George. Made with C++ to expand my knowledge.
 
