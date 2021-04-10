@@ -4,11 +4,12 @@
 #include <fstream>
 #include "SaveFile.h"
 #include <regex>
+#include <conio.h> // Windows only
 
 // Global Constants
 const int SAVES_MAX = INT_MAX; 
 const int SAVE_NAME_LENGTH = 30;
-const std::string SAVE_DIRECTORY = ".\\Saves\\";
+const std::string SAVE_DIRECTORY = "./Saves/";
 const std::string SAVE_NAME_DEFAULT = "SAVEFILE_";
 const std::string SAVE_EXTENSION = ".sav";
 
@@ -24,6 +25,8 @@ void PrintSaveFiles();
 void PromptCreateSaveFile();
 void CreateSaveFile(std::string fileName);
 void CreateDefaultFile();
+void PromptDeleteSaveFile();
+void DeleteSaveFile(char choice);
 std::string ToLowercase(std::string str);
 std::string ToUppercase(std::string str);
 int ExtractDigits(std::string str);
@@ -31,14 +34,40 @@ int ExtractDigits(std::string str);
 // Flow
 int main()
 {
+	char choice = -1;
+
 	InitializeSaveFiles();
-	std::cout << "Main screen" << std::endl;
-	PrintSaveFiles();
-	PromptCreateSaveFile();
+
+	std::cout << "POST-APOCALYPSE GEORGE" << std::endl;
+	std::cout << "Copyright Anthony Davis" << std::endl;
+	
+	std::cout << "\n" << std::endl;
+	std::cout << "1. Resume Game" << std::endl;
+	std::cout << "2. Create Save File" << std::endl;
+	std::cout << "3. Load Save File" << std::endl;
+	std::cout << "4. Delete Save File" << std::endl;
+	std::cout << "5. Exit" << std::endl;
+
+	std::cout << std::endl;
+
+	while (choice < '2' ||  choice > '5')
+		choice = _getch();
+
+	if (choice == '2')
+		PromptCreateSaveFile();
+	else if (choice == '3')
+		PrintSaveFiles(); // TODO: replace with PromptLoadSaveFile()
+	else if (choice == '4')
+		PromptDeleteSaveFile();
+	else if (choice == '5')
+		return 0;
 }
 
 void PrintSaveFiles()
 {
+	std::cout << "SAVE FILES" << std::endl;
+
+	// TODO: implement page turning with arrow keys
 	if (saveFiles.size() <= 0)
 		std::cout << "No save files found." << std::endl;
 	else
@@ -48,15 +77,43 @@ void PrintSaveFiles()
 	}
 }
 
+
+void PromptDeleteSaveFile()
+{
+	char choice = -1;
+
+	PrintSaveFiles();
+
+	std::cout << "\nFile Number: ";
+
+	while (choice <= '0' || choice > saveFiles.size()+'0')
+		choice = _getch();
+
+	DeleteSaveFile(choice);
+}
+
+void DeleteSaveFile(char choice)
+{
+	choice -= '0';
+	choice--;
+
+	if (choice < saveFiles.size())
+	{
+		std::filesystem::remove(saveFiles[choice].GetFullPath());
+		saveFiles.erase(saveFiles.begin() + choice);
+	}
+	else
+		std::cout << "File not found." << std::endl;
+}
+
 void PromptCreateSaveFile()
 {
 	// Prompt for input
 	std::string fileName = "";
+	std::cout << "Create Save File" << std::endl;
 	std::cout << "Save Name: ";
 	std::getline(std::cin, fileName);
 	fileName = fileName.substr(0, SAVE_NAME_LENGTH);
-
-	// TODO: Prompt overwrite option if file name exists, case-insensitive
 
 	if (fileName == "")
 		CreateDefaultFile();
@@ -78,6 +135,8 @@ void CreateDefaultFile()
 	// Look for files with default naming pattern
 	for (int i = 0; i < saveFiles.size(); i++)
 	{
+		// Fill gaps between save files (e.g. create SAVEFILE_1
+		// between SAVEFILE_0, SAVEFILE_4)
 		if (std::regex_match(saveFiles[i].GetFileName(), pattern))
 		{
 			num = ExtractDigits(saveFiles[i].GetFileName());
@@ -86,8 +145,6 @@ void CreateDefaultFile()
 			{
 				int num2 = ExtractDigits(saveFiles[i - 1].GetFileName());
 
-				// Fill gaps between save files (e.g. create SAVEFILE_1
-				// between SAVEFILE_0, SAVEFILE_4)
 				if (num - num2 > 1)
 				{
 					maxNumber = num2 + 1;
