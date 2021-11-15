@@ -39,16 +39,12 @@ int main()
 	InitializeSaveFiles();
 
 	std::cout << "POST-APOCALYPSE GEORGE" << std::endl;
-	std::cout << "Copyright Anthony Davis" << std::endl;
-	
-	std::cout << "\n" << std::endl;
+	std::cout << "Copyright Anthony Davis\n\n" << std::endl;
 	std::cout << "1. Resume Game" << std::endl;
 	std::cout << "2. Create Save File" << std::endl;
 	std::cout << "3. Load Save File" << std::endl;
 	std::cout << "4. Delete Save File" << std::endl;
-	std::cout << "5. Exit" << std::endl;
-
-	std::cout << std::endl;
+	std::cout << "5. Exit\n" << std::endl;
 
 	while (choice < '2' ||  choice > '5')
 		choice = _getch();
@@ -83,7 +79,6 @@ void PromptDeleteSaveFile()
 	char choice = -1;
 
 	PrintSaveFiles();
-
 	std::cout << "\nFile Number: ";
 
 	while (choice <= '0' || choice > saveFiles.size()+'0')
