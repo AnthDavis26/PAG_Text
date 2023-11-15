@@ -12,20 +12,19 @@ public:
 	std::string GetFileName();
 	std::string GetDirectory();
 	std::string GetFullPath();
+	bool IsDefaultSave(); // TODO: reconsider this even existing
 
 	// Mutators
-
-	// Operator Overloads
-	friend std::ostream& operator<<(std::ostream& os, const SaveFile& sf);
-
-	// Byte Operations
 	void SetByteAt(int byte, int addr);
 	void ORByteAt(int byte, int addr);
 	void ANDByteAt(int byte, int addr);
 	void SetBitAt(int pos, int addr);
 	void UnsetBitAt(int pos, int addr);
 	void Reset();
+	void SetAsDefaultSave(); // TODO: reconsider this even existing
 
+	// Operator Overloads
+	friend std::ostream& operator<<(std::ostream& os, const SaveFile& sf);
 private:
 	void OpenFile();
 	
@@ -33,5 +32,6 @@ private:
 	std::string fileName;
 	std::string fullPath;
 	std::fstream file;
+	bool isDefaultSave;
 };
 

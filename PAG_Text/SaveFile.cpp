@@ -24,6 +24,11 @@ std::string SaveFile::GetFullPath()
     return fullPath;
 }
 
+bool SaveFile::IsDefaultSave()
+{
+    return isDefaultSave;
+}
+
 std::string SaveFile::GetDirectory()
 {
     return directory;
@@ -94,6 +99,11 @@ void SaveFile::Reset()
     
     file.open(fullPath, std::ios::out | std::ios::binary);
     file.close();
+}
+
+void SaveFile::SetAsDefaultSave()
+{
+    isDefaultSave = true;
 }
 
 void SaveFile::OpenFile()
