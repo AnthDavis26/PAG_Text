@@ -1,6 +1,14 @@
 #include "Utils.h"
 #include <cctype>
 
+int Utils::CharNumToInt(char ch) {
+    return ch - '0';
+}
+
+void Utils::ClearScreen() {
+    system("cls"); // Windows console only
+}
+
 int Utils::ExtractDigitsFromString(const std::string& str) {
     std::string result = "";
 

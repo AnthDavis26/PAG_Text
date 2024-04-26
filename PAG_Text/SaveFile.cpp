@@ -1,40 +1,70 @@
 #include "SaveFile.h"
 #include <filesystem>
+#include "Save.h"
+
+SaveFile::SaveFile()
+{
+    SetDirectory(Save::DIRECTORY);
+    SetFileName("blank");
+}
+
+SaveFile::SaveFile(SaveFile const& sf)
+{
+    SetDirectory(sf.GetDirectory());
+    SetFileName(sf.GetFileName());
+}
 
 SaveFile::SaveFile(std::string directory)
 {
-    this->directory = directory;
-    this->fileName = "";
-    this->fullPath = directory;
-    OpenFile();
-    file.close();
+    SetDirectory(directory);
+    SetFileName("blank");
 }
 
 SaveFile::SaveFile(std::string directory, std::string fileName)
 {
-    this->directory = directory;
-    this->fileName = fileName;
-    this->fullPath = directory + fileName;
-    OpenFile();
-    file.close();
+    SetDirectory(directory);
+    SetFileName(fileName);
 }
 
-std::string SaveFile::GetFullPath()
+
+SaveFile& SaveFile::operator=(const SaveFile& sf)
 {
-    return fullPath;
+    SetDirectory(sf.GetDirectory());
+    SetFileName(sf.GetFileName());
+    return *this;
 }
 
-bool SaveFile::IsDefaultSave()
-{
-    return isDefaultSave;
-}
-
-std::string SaveFile::GetDirectory()
+std::string SaveFile::GetDirectory() const
 {
     return directory;
 }
 
-std::string SaveFile::GetFileName()
+std::string SaveFile::GetFullPath() const
+{
+    return GetDirectory() + GetFileName() + Save::EXTENSION;
+}
+
+int SaveFile::GetBitAt(int pos, int addr)
+{
+    return (GetByteAt(addr) >> pos) & 1;
+}
+
+int SaveFile::GetByteAt(int addr)
+{
+    OpenFile();
+    GetFile().seekg(addr);
+    int byte = GetFile().get();
+    GetFile().close();
+
+    return byte;
+}
+
+std::fstream& SaveFile::GetFile()
+{
+    return file;
+}
+
+std::string SaveFile::GetFileName() const
 {
     return fileName;
 }
@@ -43,43 +73,43 @@ std::string SaveFile::GetFileName()
 void SaveFile::SetByteAt(int byte, int addr)
 {
     OpenFile();
-    file.seekp(addr);
-    file.put(byte);
-    file.close();
+    GetFile().seekp(addr);
+    GetFile().put(byte);
+    GetFile().close();
 }
 
 void SaveFile::ORByteAt(int byte, int addr)
 {
     OpenFile();
 
-    if (addr > std::filesystem::file_size(fullPath))
-        std::filesystem::resize_file(fullPath, addr);
+    if (addr > std::filesystem::file_size(GetFullPath()))
+        std::filesystem::resize_file(GetFullPath(), addr);
     else
     {
-        file.seekg(addr);
-        byte |= file.get();
+        GetFile().seekg(addr);
+        byte |= GetFile().get();
     }
 
-    file.seekp(addr);
-    file.put(byte);
-    file.close();
+    GetFile().seekp(addr);
+    GetFile().put(byte);
+    GetFile().close();
 }
 
 void SaveFile::ANDByteAt(int byte, int addr)
 {
     OpenFile();
 
-    if (addr > std::filesystem::file_size(fullPath))
-        std::filesystem::resize_file(fullPath, addr);
+    if (addr > std::filesystem::file_size(GetFullPath()))
+        std::filesystem::resize_file(GetFullPath(), addr);
     else
     {
-        file.seekg(addr);
+        GetFile().seekg(addr);
         byte &= file.get();
-        file.seekp(addr);
-        file.put(byte);
+        GetFile().seekp(addr);
+        GetFile().put(byte);
     }
 
-    file.close();
+    GetFile().close();
 }
 
 void SaveFile::SetBitAt(int bitpos, int addr)
@@ -94,32 +124,46 @@ void SaveFile::UnsetBitAt(int bitpos, int addr)
 
 void SaveFile::Reset()
 {
-    if (!std::filesystem::exists(fullPath))
-        std::filesystem::create_directory(directory);
-    
-    file.open(fullPath, std::ios::out | std::ios::binary);
+    std::ofstream file(GetFullPath(), std::ios::binary);
+
+    const int numZeros = 1000;
+
+    // Write zeros to the file
+    for (int i = 0; i < numZeros; ++i) {
+        file.put(0);
+    }
+
     file.close();
 }
 
-void SaveFile::SetAsDefaultSave()
+void SaveFile::SetDirectory(std::string directory)
 {
-    isDefaultSave = true;
+    this->directory = directory;
 }
 
-void SaveFile::OpenFile()
+void SaveFile::SetFileName(std::string fileName)
 {
+    this->fileName = fileName;
+}
+
+void SaveFile::OpenFile() {
     // Modify file if it exists, otherwise create file
-    if (std::filesystem::exists(fullPath))
-        file.open(fullPath, std::ios::in | std::ios::out | std::ios::binary);
-    else
-    {
-        std::filesystem::create_directory(directory);
-        file.open(fullPath, std::ios::out | std::ios::binary);
+    if (std::filesystem::exists(GetFullPath())) {
+        GetFile().open(GetFullPath(), std::ios::in | std::ios::out | std::ios::binary);
+    }
+    else {
+        std::filesystem::create_directories(directory);
+        GetFile().open(GetFullPath(), std::ios::out | std::ios::binary);
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const SaveFile& sf)
+
+
+static std::ostream& operator<<(std::ostream& os, const SaveFile& sf)
 {
-    os << sf.fullPath;
+    os << sf.GetFullPath();
     return os;
 }
+
+
+

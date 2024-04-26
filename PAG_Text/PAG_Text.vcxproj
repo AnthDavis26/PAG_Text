@@ -141,12 +141,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Diner.cpp" />
+    <ClCompile Include="House.cpp" />
+    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="Navigator.cpp" />
     <ClCompile Include="PAG_Text.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="SaveFile.cpp" />
+    <ClCompile Include="SaveManager.cpp" />
+    <ClCompile Include="Selector.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Diner.h" />
+    <ClInclude Include="GameInfo.h" />
+    <ClInclude Include="House.h" />
+    <ClInclude Include="Keys.h" />
+    <ClInclude Include="Location.h" />
+    <ClInclude Include="LocationKeys.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Navigator.h" />
+    <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Save.h" />
     <ClInclude Include="SaveFile.h" />
+    <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="Selector.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
