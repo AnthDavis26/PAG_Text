@@ -17,7 +17,11 @@ public:
     static void LoadGame();
     static void DeleteSave();
     static void ExitGame();
+    static int GetPageNumber();
 private:
+    static void ResetPage();
+    static void TurnPageBack();
+    static void TurnPageForward();
     static void GoToChosenSelection();
     static void SaveProgress();
     static void ShowMainMenuChoices();
@@ -31,5 +35,8 @@ private:
     static constexpr char PREV_PAGE_KEY = 'q';
     static constexpr char NEXT_PAGE_KEY = 'e';
     static constexpr char RETURN_KEY = '`';
+    static int page;
+    static int furthestSaveNumOnPage;
+    static int lowestSaveNumOnPage;
 };
 

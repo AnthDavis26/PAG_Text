@@ -7,14 +7,17 @@
 #include "LocationKeys.h"
 #include "Selector.h"
 
-void MainMenu::Start()
-{
+int MainMenu::page = 1;
+int MainMenu::lowestSaveNumOnPage = 0;
+int MainMenu::furthestSaveNumOnPage = 8;
+
+void MainMenu::Start() {
 	if (!SaveManager::StartedGame()) {
 		Utils::ClearScreen();
 		MainMenu::NewGame();
 		return;
 	}
-
+	MainMenu::ResetPage();
 	ShowGameInfo();
 	std::cout << "\n" << std::endl;
 	ShowMainMenuChoices();
@@ -24,8 +27,7 @@ void MainMenu::Start()
 }
 
 
-bool MainMenu::IsValidMainMenuChoice()
-{
+bool MainMenu::IsValidMainMenuChoice() {
 	char choice = Selector::GetChoice();
 
 	return choice == MENU_CHOICE_RESUME_GAME ||
@@ -35,8 +37,29 @@ bool MainMenu::IsValidMainMenuChoice()
 		choice == MENU_CHOICE_EXIT_GAME;
 }
 
-void MainMenu::GoToChosenSelection()
-{
+void MainMenu::ResetPage() {
+	lowestSaveNumOnPage = 0;
+	furthestSaveNumOnPage = 8;
+	page = 1;
+}
+
+void MainMenu::TurnPageBack() {
+	if (page > 1) {
+		lowestSaveNumOnPage -= 8;
+		furthestSaveNumOnPage -= 8;
+		page--;
+	}
+}
+
+void MainMenu::TurnPageForward() {
+	if (furthestSaveNumOnPage < SaveManager::GetSaveFiles().size()) {
+		furthestSaveNumOnPage = std::min(furthestSaveNumOnPage + 8, (int) SaveManager::GetSaveFiles().size());
+		lowestSaveNumOnPage += 8;
+		page++;
+	}
+}
+
+void MainMenu::GoToChosenSelection() {
 	switch (Selector::GetChoice()) {
 	case MENU_CHOICE_RESUME_GAME:
 		MainMenu::ResumeGame();
@@ -51,20 +74,18 @@ void MainMenu::GoToChosenSelection()
 		MainMenu::DeleteFilesScreen();
 		break;
 	case MENU_CHOICE_EXIT_GAME:
-		Navigator::ExitGame();
+		MainMenu::ExitGame();
 		break;
 	default:
 		ShowInvalidMenuSelectMessage();
 	}
 }
 
-void MainMenu::SaveProgress()
-{
+void MainMenu::SaveProgress() {
 	SaveManager::SetCurrentLocation(LocationKeys::KEY_LOC_MAIN_MENU);
 }
 
-void MainMenu::ShowMainMenuChoices()
-{
+void MainMenu::ShowMainMenuChoices() {
 	std::cout << MENU_CHOICE_RESUME_GAME << ". Resume Game" << std::endl;
 	std::cout << MENU_CHOICE_NEW_GAME << ". New Game" << std::endl;
 	std::cout << MENU_CHOICE_LOAD_GAME << ". Load Save File" << std::endl;
@@ -80,15 +101,13 @@ void MainMenu::ShowGameInfo() {
 void MainMenu::PrintSaveFiles() {
 	if (SaveManager::GetSaveFiles().empty()) {
 		std::cout << "No save files found." << std::endl;
-	}
-	else {
-		for (int i = 0; i < SaveManager::GetSaveFiles().size(); i++) {
-			std::cout << i + 1 << ". " << SaveManager::GetSaveFiles()[i].GetFileName() << std::endl;
+	} else {
+		for (int i = lowestSaveNumOnPage, j = 1; i < furthestSaveNumOnPage; i++, j++) {
+			std::cout << j << ". " << SaveManager::GetSaveFiles()[i].GetFileName() << std::endl;
 		}
 	}
 }
 
-// TODO: implement back/forward pages
 void MainMenu::LoadGame() {
 	std::cout << "Load Save File" << std::endl;
 	MainMenu::PrintSaveFiles();
@@ -99,19 +118,21 @@ void MainMenu::LoadGame() {
 
 	if (IsValidFileSelection()) {
 		choice = Utils::CharNumToInt(choice);
+		choice += lowestSaveNumOnPage;
 		SaveManager::OverwriteCurrentSaveFile(SaveManager::GetSaveFiles().at(choice - 1));
 		Utils::ClearScreen();
 		Navigator::GoToSavedLocation();
-	}
-	else {
+	} else {
 		switch (choice) {
 		case PREV_PAGE_KEY:
-			// TODO: implement back page
-			std::cout << "Prev page pressed (not implemented yet)" << std::endl;
+			MainMenu::TurnPageBack();
+			Utils::ClearScreen();
+			MainMenu::LoadGame();
 			break;
 		case NEXT_PAGE_KEY:
-			// TODO: implement next page
-			std::cout << "Next page pressed (not implemented yet)" << std::endl;
+			MainMenu::TurnPageForward();
+			Utils::ClearScreen();
+			MainMenu::LoadGame();
 			break;
 		case RETURN_KEY:
 			Utils::ClearScreen();
@@ -123,6 +144,14 @@ void MainMenu::LoadGame() {
 				<< std::endl;
 		}
 	}
+}
+
+void MainMenu::ExitGame() {
+	Navigator::ExitGame();
+}
+
+int MainMenu::GetPageNumber() {
+	return page;
 }
 
 bool MainMenu::IsValidFileSelectScreenChoice() {
