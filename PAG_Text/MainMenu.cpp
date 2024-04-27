@@ -9,7 +9,7 @@
 
 int MainMenu::page = 1;
 int MainMenu::lowestSaveNumOnPage = 0;
-int MainMenu::furthestSaveNumOnPage = 8;
+int MainMenu::furthestSaveNumOnPage = MainMenu::MAX_FILES_ON_SELECT_SCREEN;
 
 void MainMenu::Start() {
 	if (!SaveManager::StartedGame()) {
@@ -37,24 +37,27 @@ bool MainMenu::IsValidMainMenuChoice() {
 		choice == MENU_CHOICE_EXIT_GAME;
 }
 
+// TODO: for page turning and such, contain the lowest and highest (not 'furthest') file numbers
 void MainMenu::ResetPage() {
 	lowestSaveNumOnPage = 0;
-	furthestSaveNumOnPage = 8;
+	furthestSaveNumOnPage = std::min(lowestSaveNumOnPage + MainMenu::MAX_FILES_ON_SELECT_SCREEN, 
+		(int)SaveManager::GetSaveFiles().size());
 	page = 1;
 }
 
 void MainMenu::TurnPageBack() {
 	if (page > 1) {
-		lowestSaveNumOnPage -= 8;
-		furthestSaveNumOnPage -= 8;
+		lowestSaveNumOnPage -= MainMenu::MAX_FILES_ON_SELECT_SCREEN;
+		furthestSaveNumOnPage = lowestSaveNumOnPage + MainMenu::MAX_FILES_ON_SELECT_SCREEN;
 		page--;
 	}
 }
 
 void MainMenu::TurnPageForward() {
 	if (furthestSaveNumOnPage < SaveManager::GetSaveFiles().size()) {
-		furthestSaveNumOnPage = std::min(furthestSaveNumOnPage + 8, (int) SaveManager::GetSaveFiles().size());
-		lowestSaveNumOnPage += 8;
+		lowestSaveNumOnPage += MainMenu::MAX_FILES_ON_SELECT_SCREEN;
+		furthestSaveNumOnPage = std::min(lowestSaveNumOnPage + MainMenu::MAX_FILES_ON_SELECT_SCREEN, 
+			(int) SaveManager::GetSaveFiles().size());
 		page++;
 	}
 }
@@ -111,9 +114,24 @@ void MainMenu::PrintSaveFiles() {
 void MainMenu::LoadGame() {
 	std::cout << "Load Save File" << std::endl;
 	MainMenu::PrintSaveFiles();
-	std::cout << "\nReturn: " << RETURN_KEY << "\nLeft Page: " << PREV_PAGE_KEY
-		<< "\tNext Page: " << NEXT_PAGE_KEY << std::endl;
+	std::cout << "\nReturn: " << RETURN_KEY << std::endl;
 
+	// TODO: cleanup
+	if (GetPageNumber() > 1) {
+		std::cout << "Previous Page : " << PREV_PAGE_KEY;
+		if (furthestSaveNumOnPage < SaveManager::GetSaveFiles().size()) {
+			std::cout << "\t" << std::endl;
+		} else {
+			std::cout << std::endl;
+		}
+	}
+
+	// TODO: cleanup and possibly consolidate as a reuse
+	if (furthestSaveNumOnPage < SaveManager::GetSaveFiles().size()) {
+		std::cout << "Next Page: " << NEXT_PAGE_KEY << std::endl;
+	}
+
+	// TODO: use less 'choice' and more GetChoice()
 	char choice = Selector::PromptAndGetChoice(IsValidFileSelectScreenChoice);
 
 	if (IsValidFileSelection()) {

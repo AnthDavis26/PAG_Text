@@ -38,5 +38,6 @@ private:
     static int page;
     static int furthestSaveNumOnPage;
     static int lowestSaveNumOnPage;
+    static constexpr int MAX_FILES_ON_SELECT_SCREEN = 9;
 };
 
