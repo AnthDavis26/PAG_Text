@@ -23,10 +23,6 @@ void MainMenu::Start()
 	MainMenu::GoToChosenSelection();
 }
 
-void MainMenu::ShowInvalidMenuSelectMessage() {
-	std::cout << "INVALID MAIN MENU SELECTION. This should not happen. Please report"
-		<< " this error to the dev at " << GameInfo::DEV_EMAIL << "." << std::endl;
-}
 
 bool MainMenu::IsValidMainMenuChoice()
 {
@@ -123,7 +119,7 @@ void MainMenu::LoadGame() {
 			break;
 		default:
 			std::cout << "A valid file / file select screen choice should have been made. " <<
-				"Something's not right. Please report this error to anthony.m.davis.26@gmail.com."
+				"Something's not right. Please report this error to " << GameInfo::DEV_EMAIL << "."
 				<< std::endl;
 		}
 	}
@@ -169,4 +165,9 @@ void MainMenu::NewGame() {
 	SaveManager::SetStartedGame(true);
 	Navigator::GoToHouse();
 	SaveManager::SetAtHouse(true);
+}
+
+void MainMenu::ShowInvalidMenuSelectMessage() {
+	std::cout << "INVALID MAIN MENU SELECTION. This should not happen. Please report"
+		<< " this error to the dev at " << GameInfo::DEV_EMAIL << "." << std::endl;
 }
