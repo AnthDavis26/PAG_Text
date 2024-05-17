@@ -1,9 +1,9 @@
 #pragma once
 
 namespace LocationKeys {
-	static constexpr int KEY_LOC_PAUSE_MENU = 0;
-	static constexpr int KEY_LOC_HOUSE = 1;
-	static constexpr int KEY_LOC_MAIN_MENU = 2;
-	static constexpr int KEY_LOC_DINER = 0x0A;
-	static constexpr int KEY_LOC_EXIT_GAME = 6;
+	static constexpr int PAUSE_MENU = 0x00;
+	static constexpr int HOUSE = 0x01;
+	static constexpr int MAIN_MENU = 0x02;
+	static constexpr int EXIT_GAME = 0x06;
+	static constexpr int DINER = 0x0A;
 }

@@ -65,13 +65,10 @@
     <ClInclude Include="SaveManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keys.h">
+    <ClInclude Include="InputKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Save.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainMenu.h">

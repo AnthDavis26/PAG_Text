@@ -157,13 +157,12 @@
     <ClInclude Include="Diner.h" />
     <ClInclude Include="GameInfo.h" />
     <ClInclude Include="House.h" />
-    <ClInclude Include="Keys.h" />
+    <ClInclude Include="InputKeys.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="LocationKeys.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Navigator.h" />
     <ClInclude Include="PauseMenu.h" />
-    <ClInclude Include="Save.h" />
     <ClInclude Include="SaveFile.h" />
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="Selector.h" />

@@ -1,12 +1,10 @@
 #include "PauseMenu.h"
 #include "Navigator.h"
 
-void PauseMenu::ResumeGame()
-{
+void PauseMenu::ResumeGame() {
 	Navigator::GoToSavedLocation();
 }
 
-void PauseMenu::ExitGame()
-{
+void PauseMenu::ExitGame() {
 	Navigator::GoToMainMenu();
 }

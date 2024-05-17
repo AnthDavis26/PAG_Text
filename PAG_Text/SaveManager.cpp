@@ -2,10 +2,12 @@
 #include "LocationKeys.h"
 
 std::vector<SaveFile> SaveManager::saveFiles;
+const std::string SaveManager::SAVE_DEFAULT_DIRECTORY = "./Saves/";
+const std::string SaveManager::SAVE_CURRENT_NAME = "~CURRENT";
+const std::string SaveManager::SAVE_DEFAULT_EXTENSION = ".sav";
 
 // TODO: implement
-void SaveManager::DEBUG_CheckAllOverlaps()
-{
+void SaveManager::DEBUG_CheckAllOverlaps() {
     // Create blank test save file
     // As you set bits, make sure one hasn't already been set
     // If overlap is found, print "ERROR: Save Overlap at: " + overlap bit address
@@ -13,24 +15,21 @@ void SaveManager::DEBUG_CheckAllOverlaps()
     // Otherwise, print "Overlap Check GOOD"
 }
 
-SaveFile SaveManager::GetCurrentSaveFile()
-{
-    return SaveFile(Save::DIRECTORY, Save::NAME_DEFAULT);
+SaveFile SaveManager::GetCurrentSaveFile() {
+    return SaveFile(SaveManager::SAVE_DEFAULT_DIRECTORY, 
+        SaveManager::SAVE_CURRENT_NAME, SaveManager::SAVE_DEFAULT_EXTENSION);
 }
 
-int SaveManager::GetCurrentLocationKey()
-{
+int SaveManager::GetCurrentLocationKey() {
     return SaveManager::GetCurrentSaveFile().GetByteAt(ADDRESS_CURRENT_LOCATION);
 }
 
-void SaveManager::SetCurrentLocation(int key)
-{
+void SaveManager::SetCurrentLocation(int key) {
     SaveManager::GetCurrentSaveFile().SetByteAt(key, ADDRESS_CURRENT_LOCATION);
 }
 
-void SaveManager::OverwriteCurrentSaveFile(SaveFile sf)
-{
-    if (sf.GetFullPath() == GetCurrentSaveFile().GetFullPath()) {
+void SaveManager::OverwriteCurrentSaveFile(SaveFile sf) {
+    if (sf.GetFullPath() == SaveManager::GetCurrentSaveFile().GetFullPath()) {
         return;
     }
 
@@ -48,8 +47,11 @@ void SaveManager::OverwriteCurrentSaveFile(SaveFile sf)
     dest.close();
 }
 
-void SaveManager::SetAteTrash(bool b)
-{
+void SaveManager::ResetSaveFile(SaveFile sf) {
+
+}
+
+void SaveManager::SetAteTrash(bool b) {
     if (b) {
         SaveManager::GetCurrentSaveFile().SetBitAt(FLAG_POS_ATE_TRASH, ADDRESS_ATE_TRASH);
     }
@@ -58,13 +60,11 @@ void SaveManager::SetAteTrash(bool b)
     }
 }
 
-void SaveManager::SetAtHouse(bool)
-{
-    SaveManager::SetCurrentLocation(LocationKeys::KEY_LOC_HOUSE);
+void SaveManager::SetAtHouse(bool) {
+    SaveManager::SetCurrentLocation(LocationKeys::HOUSE);
 }
 
-void SaveManager::SetStartedGame(bool b)
-{
+void SaveManager::SetStartedGame(bool b) {
     if (b) {
         SaveManager::GetCurrentSaveFile().SetBitAt(FLAG_POS_STARTED_GAME, ADDRESS_STARTED_GAME);
     }
@@ -73,42 +73,49 @@ void SaveManager::SetStartedGame(bool b)
     }
 }
 
-bool SaveManager::AteTrash()
-{
+bool SaveManager::AteTrash() {
     return GetCurrentSaveFile().GetBitAt(FLAG_POS_ATE_TRASH, ADDRESS_ATE_TRASH);
 }
 
 void SaveManager::InitSaveFiles() {
+    SaveManager::ClearSaveFiles();
     bool currentFileFound = false;
 
     // Search for and add list of files with correct extension
-    for (const auto& entry : std::filesystem::directory_iterator(Save::DIRECTORY)) {
-        if (entry.path().extension() == Save::EXTENSION) {
+    for (const auto& entry : std::filesystem::directory_iterator(SaveManager::SAVE_DEFAULT_DIRECTORY)) {
+        if (entry.path().extension() == SAVE_DEFAULT_EXTENSION) {
             std::string fileName = entry.path().filename().string();
-            fileName = fileName.substr(0, fileName.size() - Save::EXTENSION.size());
+            fileName = fileName.substr(0, fileName.size() - SAVE_DEFAULT_EXTENSION.size());
 
-            if (fileName == Save::NAME_DEFAULT) {
+            if (fileName == SaveManager::SAVE_CURRENT_NAME) {
                 currentFileFound = true;
             } else {
-                SaveManager::GetSaveFiles().push_back(SaveFile(Save::DIRECTORY, fileName));
+                SaveManager::GetSaveFiles().push_back(SaveFile(SaveManager::SAVE_DEFAULT_DIRECTORY, fileName, SAVE_DEFAULT_EXTENSION));
             }
         }
     }
 
     if (!currentFileFound) {
-        SaveFile temp(Save::DIRECTORY, Save::NAME_DEFAULT);
+        SaveFile temp(SaveManager::SAVE_DEFAULT_DIRECTORY, SaveManager::SAVE_CURRENT_NAME, SAVE_DEFAULT_EXTENSION);
         temp.Reset();
         SaveManager::OverwriteCurrentSaveFile(temp);
     }
 }
 
-bool SaveManager::StartedGame()
-{
+bool SaveManager::StartedGame() {
     return SaveManager::GetCurrentSaveFile().GetBitAt(FLAG_POS_STARTED_GAME, ADDRESS_STARTED_GAME);
 }
 
-
-std::vector<SaveFile>& SaveManager::GetSaveFiles()
-{
+std::vector<SaveFile>& SaveManager::GetSaveFiles() {
     return saveFiles;
+}
+
+void SaveManager::DeleteSaveAtIndex(int index) {
+    SaveFile sf = SaveManager::GetSaveFiles().at(index);
+    SaveManager::GetSaveFiles().erase(SaveManager::GetSaveFiles().begin() + index);
+    std::filesystem::remove(sf.GetFullPath());
+}
+
+void SaveManager::ClearSaveFiles() {
+    SaveManager::GetSaveFiles().clear();
 }
