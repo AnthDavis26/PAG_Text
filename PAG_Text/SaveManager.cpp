@@ -100,6 +100,7 @@ bool SaveManager::AteTrash() {
 }
 
 void SaveManager::InitSaveFiles() {
+    std::filesystem::create_directories(SaveManager::SAVE_DEFAULT_DIRECTORY);
     SaveManager::ClearSaveFiles();
     bool currentFileFound = false;
 
