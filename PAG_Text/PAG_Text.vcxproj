@@ -18,6 +18,39 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Diner.h" />
+    <ClInclude Include="GameInfo.h" />
+    <ClInclude Include="House.h" />
+    <ClInclude Include="InputKeys.h" />
+    <ClInclude Include="Location.h" />
+    <ClInclude Include="LocationKeys.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Navigator.h" />
+    <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Props.h" />
+    <ClInclude Include="Rules.h" />
+    <ClInclude Include="SaveFile.h" />
+    <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="Prompt.h" />
+    <ClInclude Include="Strings.h" />
+    <ClInclude Include="Thesaurus.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Diner.cpp" />
+    <ClCompile Include="House.cpp" />
+    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="Navigator.cpp" />
+    <ClCompile Include="PAG_Text.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
+    <ClCompile Include="SaveFile.cpp" />
+    <ClCompile Include="SaveManager.cpp" />
+    <ClCompile Include="Prompt.cpp" />
+    <ClCompile Include="Thesaurus.cpp" />
+    <ClCompile Include="Utils.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -140,34 +173,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Diner.cpp" />
-    <ClCompile Include="House.cpp" />
-    <ClCompile Include="Location.cpp" />
-    <ClCompile Include="MainMenu.cpp" />
-    <ClCompile Include="Navigator.cpp" />
-    <ClCompile Include="PAG_Text.cpp" />
-    <ClCompile Include="PauseMenu.cpp" />
-    <ClCompile Include="SaveFile.cpp" />
-    <ClCompile Include="SaveManager.cpp" />
-    <ClCompile Include="Selector.cpp" />
-    <ClCompile Include="Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Diner.h" />
-    <ClInclude Include="GameInfo.h" />
-    <ClInclude Include="House.h" />
-    <ClInclude Include="InputKeys.h" />
-    <ClInclude Include="Location.h" />
-    <ClInclude Include="LocationKeys.h" />
-    <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="Navigator.h" />
-    <ClInclude Include="PauseMenu.h" />
-    <ClInclude Include="SaveFile.h" />
-    <ClInclude Include="SaveManager.h" />
-    <ClInclude Include="Selector.h" />
-    <ClInclude Include="Utils.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

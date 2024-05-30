@@ -4,5 +4,8 @@
 class House : public Location {
 	public:
 		static void Start();
+		static void EnterKitchen();
+		static void EnterBathroom();
+		static void EnterBedroom();
 };
 

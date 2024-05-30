@@ -4,9 +4,11 @@
 
 class SaveFile {
 	public:
+		SaveFile();
 		SaveFile(const SaveFile&);
 		SaveFile(std::string directory, std::string fileName, std::string extension);
 		SaveFile& operator=(const SaveFile&);
+		bool operator<(const SaveFile& other) const;
 
 		void OpenFile();
 		void SetByteAt(int byte, int addr);

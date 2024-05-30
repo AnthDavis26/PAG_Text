@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 class Utils {
     public:
@@ -8,4 +9,11 @@ class Utils {
         static std::string ToUppercase(const std::string& str);
         static int CharNumToInt(char ch);
         static void ClearScreen();
+        static void Trim(std::string&);
+        static int RandomNumber(int min, int max);
+
+        template <typename Container, typename T>
+        static bool ObjectContains(const Container& container, const T& elem) {
+            return std::find(container.begin(), container.end(), elem) != container.end();
+        };
 };

@@ -1,6 +1,12 @@
 #include "SaveFile.h"
 #include <filesystem>
 
+SaveFile::SaveFile() {
+    SaveFile::SetDirectory("");
+    SaveFile::SetFileName("");
+    SaveFile::SetExtension("");
+}
+
 SaveFile::SaveFile(const SaveFile& sf) {
     SaveFile::SetDirectory(sf.GetDirectory());
     SaveFile::SetFileName(sf.GetFileName());
@@ -18,6 +24,10 @@ SaveFile& SaveFile::operator=(const SaveFile& sf) {
     SaveFile::SetFileName(sf.GetFileName());
     SaveFile::SetExtension(sf.GetExtension());
     return *this;
+}
+
+bool SaveFile::operator<(const SaveFile& other) const {
+    return this->GetFullPath() < other.GetFullPath();
 }
 
 std::string SaveFile::GetDirectory() const {

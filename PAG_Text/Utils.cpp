@@ -1,5 +1,8 @@
 #include "Utils.h"
 #include <cctype>
+#include <vector>
+#include <algorithm>
+#include <iterator>
 
 int Utils::CharNumToInt(char ch) {
     return ch - '0';
@@ -7,6 +10,27 @@ int Utils::CharNumToInt(char ch) {
 
 void Utils::ClearScreen() {
     system("cls"); // Windows console only
+}
+
+void Utils::Trim(std::string& str) {
+    size_t start = 0;
+
+    while (start < str.length() && std::isspace(str[start])) {
+        ++start;
+    }
+
+    size_t end = str.length();
+
+    while (end > start && std::isspace(str[end - 1])) {
+        --end;
+    }
+
+    str = str.substr(start, end - start);
+}
+
+int Utils::RandomNumber(int min, int max) {
+    std::srand((int)std::time(nullptr));
+    return std::rand() % max + min;
 }
 
 int Utils::ExtractDigitsFromString(const std::string& str) {
