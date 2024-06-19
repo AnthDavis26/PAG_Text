@@ -8,10 +8,6 @@ int Utils::CharNumToInt(char ch) {
     return ch - '0';
 }
 
-void Utils::ClearScreen() {
-    system("cls"); // Windows console only
-}
-
 void Utils::Trim(std::string& str) {
     size_t start = 0;
 

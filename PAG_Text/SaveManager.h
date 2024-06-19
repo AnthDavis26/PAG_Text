@@ -1,49 +1,44 @@
 #pragma once
-#include <vector>
-#include <filesystem>
-#include "SaveFile.h"
 #include "Location.h"
 #include "Navigator.h"
+#include "SaveFile.h"
+#include <filesystem>
+#include <vector>
 
 class SaveManager {
-	public:
-		static SaveFile GetCurrentSaveFile();
-		static int GetCurrentLocationKey();
-		static std::vector<SaveFile>& GetSaveFiles();
-		static bool AteTrash();
-		static bool StartedGame();
-		static bool Contains(SaveFile);
-		static int IndexOf(SaveFile);
+public:
+    static const SaveFile& GetCurrentSaveFile();
+    static const std::vector<SaveFile>& GetSaveFiles();
+    static bool AteHouseKitchenTrash();
+    static bool StartedGame();
+    static bool Contains(const SaveFile&);
+    static int IndexOf(const SaveFile& sf);
+    static int GetCurrentLocationKey();
 
-		static void CreateNewFile(SaveFile);
-		static void OverwriteSaveFile(SaveFile source, SaveFile destination);
-		static void OverwriteCurrentSaveFileWith(SaveFile);
-		static void SetCurrentLocation(int locationKey);
-		static void SetAtMainMenu();
-		static void SetAtPauseMenu();
-		static void SetAteHouseTrash();
-		static void SetAtHouse();
-		static void SetAtDiner();
-		static void SetStartedGame();
-		static void DeleteSaveAtIndex(int);
+    static void CreateNewFile(const SaveFile& sf);
+    static void SetCurrentLocation(int locationKey);
+    static void SetAtMainMenu();
+    static void SetAtPauseMenu();
+    static void SetAteHouseKitchenTrash();
+    static void SetAtHouse();
+    static void SetAtDiner();
+    static void SetStartedGame();
+    static void DeleteSaveAtIndex(int index);
+    static void OverwriteCurrentSaveFile(const SaveFile& sf);
 
-		static void InitSaveFiles();
-		static void SortFiles();
-		static void DEBUG_CheckAllOverlaps();
-	private:
-		static void ClearSaveFiles();
+    static void ResetCurrentSaveFile();
+    static void InitSaveFiles();
+    static void SortFiles();
+    static void DEBUG_CheckAllOverlaps();
+private:
+    static void ClearSaveFiles();
+    static void OverwriteSaveFile(const SaveFile& source, const SaveFile& destination);
 
-		static std::vector<SaveFile> saveFiles;
-		static const int ADDRESS_CURRENT_LOCATION = 0x00000000;
-
-		static const int ADDRESS_STARTED_GAME = 0x0000000F;
-		static const int FLAG_POS_STARTED_GAME = 0;
-
-		static const int ADDRESS_ATE_HOUSE_TRASH = 0x000000FF;
-		static const int FLAG_POS_ATE_HOUSE_TRASH = 0;
-
-		static const std::string SAVE_DEFAULT_DIRECTORY;
-		static const std::string SAVE_DEFAULT_EXTENSION;
-		static const std::string SAVE_CURRENT_NAME;
+    static std::vector<SaveFile> saveFiles;
+    static SaveFile currentSaveFile;
+    static int ADDRESS_CURRENT_LOCATION;
+    static int ADDRESS_STARTED_GAME;
+    static int FLAG_POS_STARTED_GAME;
+    static int ADDRESS_ATE_HOUSE_TRASH;
+    static int FLAG_POS_ATE_HOUSE_TRASH;
 };
-

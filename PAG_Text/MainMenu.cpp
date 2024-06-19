@@ -5,9 +5,11 @@
 #include "Navigator.h"
 #include "SaveManager.h"
 #include "LocationKeys.h"
-#include "Prompt.h"
+#include "Prompter.h"
 #include "InputKeys.h"
 #include "Rules.h"
+#include "Strings.h"
+#include "InputChecker.h"
 
 int MainMenu::currentPageNumber;
 int MainMenu::maxPossibleIndex;
@@ -15,31 +17,27 @@ int MainMenu::minSaveIndexOnPage;
 int MainMenu::maxSaveIndexOnPage;
 
 void MainMenu::Start() {
-	if (!SaveManager::StartedGame()) {
-		Utils::ClearScreen();
-		MainMenu::NewGame();
-		return;
-	}
-
-	if (Rules::SAVE_AT_MAIN_MENU) {
+	if (Rules::CAN_SAVE_AT_MAIN_MENU) {
 		SaveManager::SetAtMainMenu();
 	}
 
 	MainMenu::ResetFileSelectPage();
-	MainMenu::PrintGameInfo();
-	std::cout << "\n" << std::endl;
-	MainMenu::ShowMainMenuChoices();
-	Prompt::PromptChoiceUntil(MainMenu::IsValidMainMenuChoice);
-	Utils::ClearScreen();
-	MainMenu::GoToChosenSelection();
-}
+	Prompter::ShowGameInfo();
+	Prompter::Print(
+		"\n1. Resume Game\n"
+		"2. New Game\n"
+		"3. Load Save File\n"
+		"4. Delete Save File\n"
+		"5. Exit"
+	);
 
-void MainMenu::ShowMainMenuChoices() {
-	std::cout << InputKeys::MENU_CHOICE_RESUME_GAME << ". Resume Game" << std::endl;
-	std::cout << InputKeys::MENU_CHOICE_NEW_GAME << ". New Game" << std::endl;
-	std::cout << InputKeys::MENU_CHOICE_LOAD_GAME << ". Load Save File" << std::endl;
-	std::cout << InputKeys::MENU_CHOICE_DELETE_FILE << ". Delete Save File" << std::endl;
-	std::cout << InputKeys::MENU_CHOICE_EXIT_GAME << ". Exit" << std::endl;
+	Prompter::PromptUntilValidCommand(
+		std::make_pair( '1', MainMenu::ResumeGame),
+		std::make_pair( '2', MainMenu::NewGame),
+		std::make_pair( '3', MainMenu::LoadGame),
+		std::make_pair( '4', MainMenu::DeleteFilesScreen),
+		std::make_pair( '5', MainMenu::ExitGame)
+	);
 }
 
 void MainMenu::ResumeGame() {
@@ -48,68 +46,62 @@ void MainMenu::ResumeGame() {
 
 void MainMenu::NewGame() {
 	if (SaveManager::StartedGame()) {
-		MainMenu::PrintOverwriteWithNewGameWarning();
-		std::cout << "\n" << std::endl;
-		Prompt::PromptYesOrNo();
+		Prompter::Print(Strings::WARNING_OVERWRITE_WITH_NEW_GAME);
+		Prompter::PromptUntilYesOrNo();
+		Prompter::ClearScreen();
 
-		if (Prompt::PickedNo()) {
-			Utils::ClearScreen();
+		if (InputChecker::PickedNo()) {
 			Navigator::GoToMainMenu();
 			return;
 		}
 	}
 
-	Utils::ClearScreen();
-	SaveManager::GetCurrentSaveFile().Reset();
+	SaveManager::ResetCurrentSaveFile();
 	SaveManager::SetStartedGame();
-	Navigator::GoToHouse();
+	SaveManager::SetCurrentLocation(LocationKeys::HOUSE_BEDROOM);
+	Navigator::GoToHouseBedroom();
 }
 
 void MainMenu::LoadGame() {
 	SaveManager::InitSaveFiles();
-	std::cout << "Load Save File" << std::endl;
+	Prompter::Print("Load Save File");
 	MainMenu::PrintSaveFiles();
-	std::cout << "\nReturn: " << InputKeys::RETURN << std::endl;
+	Prompter::Print("\nReturn: " + std::string{ InputKeys::RETURN });
 	MainMenu::PrintFilePageChoices();
-	std::cout << std::endl;
-	Prompt::PromptChoiceUntil(IsValidFileSelectScreenChoice);
+	Prompter::Print("");
+	Prompter::PromptChoiceUntil(MainMenu::IsValidFileSelectScreenChoice);
+	Prompter::ClearScreen();
 
-	if (IsValidFileSelection()) {
-		Utils::ClearScreen();
-		int index = Utils::CharNumToInt(Prompt::GetChoice()) + MainMenu::GetMinIndexOnPage() - 1;
+	if (MainMenu::IsValidFileSelection()) {
+		int index = Utils::CharNumToInt(Prompter::GetChoice()) + MainMenu::GetMinIndexOnPage() - 1;
 		MainMenu::PrintOverwriteWithLoadWarning();
-		std::cout << "\n" << std::endl;
-		Prompt::PromptYesOrNo();
+		Prompter::Print("\n");
+		Prompter::PromptUntilYesOrNo();
+		Prompter::ClearScreen();
 
-		if (Prompt::PickedNo()) {
-			Utils::ClearScreen();
+		if (InputChecker::PickedNo()) {
 			Navigator::GoToMainMenu();
 			return;
 		}
 
-		SaveManager::OverwriteCurrentSaveFileWith(SaveManager::GetSaveFiles().at(index));
-		Utils::ClearScreen();
+		SaveManager::OverwriteCurrentSaveFile(SaveManager::GetSaveFiles().at(index));
 		Navigator::GoToSavedLocation();
-	} else {
-		switch (Prompt::GetChoice()) {
+	} 
+	else {
+		switch (Prompter::GetChoice()) {
 			case InputKeys::PREV_PAGE:
 				MainMenu::TurnPageBack();
-				Utils::ClearScreen();
 				MainMenu::LoadGame();
 				return;
 			case InputKeys::NEXT_PAGE:
 				MainMenu::TurnPageForward();
-				Utils::ClearScreen();
 				MainMenu::LoadGame();
 				return;
 			case InputKeys::RETURN:
-				Utils::ClearScreen();
 				Navigator::GoToMainMenu();
 				return;
 			default:
-				std::cout << "A valid file / file select screen choice should have been made. " <<
-					"Something's not right. Please report this error to " << GameInfo::DEV_EMAIL << "."
-					<< std::endl;
+				Prompter::ShowInvalidChoice();
 		}
 	}
 }
@@ -118,63 +110,48 @@ void MainMenu::LoadGame() {
 void MainMenu::DeleteFilesScreen() {
 	SaveManager::InitSaveFiles();
 	MainMenu::SetMaxPossibleIndex((int)SaveManager::GetSaveFiles().size() - 1);
-	std::cout << "Delete Save File" << std::endl;
+	Prompter::Print("Delete Save File\n");
 	MainMenu::PrintSaveFiles();
-	std::cout << "\nReturn: " << InputKeys::RETURN << std::endl;
+	Prompter::Print("Return: " + std::string{ InputKeys::RETURN });
 	MainMenu::PrintFilePageChoices();
-	std::cout << std::endl;
-	Prompt::PromptChoiceUntil(IsValidFileSelectScreenChoice);
+	Prompter::Print("");
+	Prompter::PromptChoiceUntil(MainMenu::IsValidFileSelectScreenChoice);
+	Prompter::ClearScreen();
 
-	if (IsValidFileSelection()) {
-		Utils::ClearScreen();
-		int index = Utils::CharNumToInt(Prompt::GetChoice()) + MainMenu::GetMinIndexOnPage() - 1;
-		MainMenu::PrintDeleteFileWarning();
-		std::cout << "\n" << std::endl;
-		Prompt::PromptYesOrNo();
+	if (MainMenu::IsValidFileSelection()) {
+		int index = Utils::CharNumToInt(Prompter::GetChoice()) + MainMenu::GetMinIndexOnPage() - 1;
+		
+		Prompter::Print("");
+		Prompter::PromptUntilYesOrNo();
 
-		if (Prompt::PickedYes()) {
+		if (InputChecker::PickedYes()) {
 			SaveManager::DeleteSaveAtIndex(index);
 		}
 
 		MainMenu::ResetFileSelectPage();
-		Utils::ClearScreen();
 		MainMenu::DeleteFilesScreen();
-	} else {
-		switch (Prompt::GetChoice()) {
+	} 
+	else {
+		switch (Prompter::GetChoice()) {
 			case InputKeys::PREV_PAGE:
 				MainMenu::TurnPageBack();
-				Utils::ClearScreen();
 				MainMenu::DeleteFilesScreen();
 				return;
 			case InputKeys::NEXT_PAGE:
 				MainMenu::TurnPageForward();
-				Utils::ClearScreen();
 				MainMenu::DeleteFilesScreen();
 				return;
 			case InputKeys::RETURN:
-				Utils::ClearScreen();
 				Navigator::GoToMainMenu();
 				return;
 			default:
-				std::cout << "A valid file / file select screen choice should have been made. " <<
-					"Something's not right. Please report this error to " << GameInfo::DEV_EMAIL << "."
-					<< std::endl;
+				Prompter::ShowInvalidChoice();
 		}
 	}
 }
 
 void MainMenu::ExitGame() {
 	Navigator::ExitGame();
-}
-
-bool MainMenu::IsValidMainMenuChoice() {
-	char choice = Prompt::GetChoice();
-
-	return choice == InputKeys::MENU_CHOICE_RESUME_GAME ||
-		choice == InputKeys::MENU_CHOICE_NEW_GAME ||
-		choice == InputKeys::MENU_CHOICE_LOAD_GAME ||
-		choice == InputKeys::MENU_CHOICE_DELETE_FILE ||
-		choice == InputKeys::MENU_CHOICE_EXIT_GAME;
 }
 
 void MainMenu::ResetFileSelectPage() {
@@ -190,7 +167,8 @@ void MainMenu::TurnPageBack() {
 
 	if (MainMenu::GetMinIndexOnPage() < 0) {
 		MainMenu::ResetFileSelectPage();
-	} else {
+	} 
+	else {
 		MainMenu::SetMaxIndexOnPage(MainMenu::GetMinIndexOnPage() + MainMenu::MAX_FILES_ON_SELECT_SCREEN - 1);
 		MainMenu::SetCurrentPageNumber(MainMenu::GetCurrentPageNumber() - 1);
 	}
@@ -201,98 +179,62 @@ void MainMenu::TurnPageForward() {
 	MainMenu::SetMaxIndexOnPage(MainMenu::GetMinIndexOnPage() + MainMenu::MAX_FILES_ON_SELECT_SCREEN - 1);
 
 	if (MainMenu::GetMinIndexOnPage() >= MainMenu::GetMaxPossibleIndex()) {
-		minSaveIndexOnPage = MainMenu::maxPossibleIndex;
+		MainMenu::minSaveIndexOnPage = MainMenu::maxPossibleIndex;
 	}
 
-	if (maxSaveIndexOnPage >= MainMenu::maxPossibleIndex) {
-		maxSaveIndexOnPage = MainMenu::maxPossibleIndex;
+	if (MainMenu::maxSaveIndexOnPage >= MainMenu::maxPossibleIndex) {
+		MainMenu::maxSaveIndexOnPage = MainMenu::maxPossibleIndex;
 	}
 
 	MainMenu::SetCurrentPageNumber(MainMenu::GetCurrentPageNumber() + 1);
 }
 
-void MainMenu::GoToChosenSelection() {
-	switch (Prompt::GetChoice()) {
-		case InputKeys::MENU_CHOICE_RESUME_GAME:
-			MainMenu::ResumeGame();
-			break;
-		case InputKeys::MENU_CHOICE_NEW_GAME:
-			MainMenu::NewGame();
-			break;
-		case InputKeys::MENU_CHOICE_LOAD_GAME:
-			MainMenu::LoadGame();
-			break;
-		case InputKeys::MENU_CHOICE_DELETE_FILE:
-			MainMenu::DeleteFilesScreen();
-			break;
-		case InputKeys::MENU_CHOICE_EXIT_GAME:
-			MainMenu::ExitGame();
-			break;
-		default:
-			ShowInvalidMenuSelectMessage();
-	}
-}
-
-void MainMenu::SaveProgress() {
-	SaveManager::SetCurrentLocation(LocationKeys::MAIN_MENU);
-}
-
-void MainMenu::PrintGameInfo() {
-	std::cout << GameInfo::TITLE << std::endl;
-	std::cout << GameInfo::COPYRIGHT << std::endl;
-}
-
 void MainMenu::PrintSaveFiles() {
-	std::cout << "Page: " << MainMenu::GetCurrentPageNumber() << "\n" << std::endl;
-	//std::cout << "MIN INDEX: " << MainMenu::minSaveIndexOnPage << std::endl;
-	//std::cout << "MAX INDEX: " << MainMenu::maxSaveIndexOnPage << std::endl;
-	//std::cout << "MAX POSSIBLE INDEX : " << MainMenu::maxPossibleIndex << std::endl;
+	Prompter::Print("Page: " + std::to_string(MainMenu::GetCurrentPageNumber()));
+
 	if (SaveManager::GetSaveFiles().empty()) {
-		std::cout << "No save files found." << std::endl;
-	} else {
-		std::cout << "Enter a choice from 1 to "
-			<< (MainMenu::GetMaxIndexOnPage() - MainMenu::GetMinIndexOnPage() + 1)		
-			<< "." << std::endl;
-		for (int i = MainMenu::GetMinIndexOnPage(), j = 1; i <= MainMenu::GetMaxIndexOnPage(); i++, j++) {
-			std::cout << j << ". " << SaveManager::GetSaveFiles()[i].GetFileName();
-			//std::cout << " (INDEX: " << i << ")";
-			std::cout << std::endl;
+		Prompter::Print("No save files found.");
+	} 
+	else {
+		int end = MainMenu::GetMaxIndexOnPage() - MainMenu::GetMinIndexOnPage() + 1;
+
+		Prompter::Print("Enter choice from 1 to " + std::to_string(end) + ".");
+
+		int n = MainMenu::GetMaxIndexOnPage();
+
+		for (int i = MainMenu::GetMinIndexOnPage(), j = 1; i <= n; i++, j++) {
+			Prompter::Print(std::to_string(j) + ". "
+				+ SaveManager::GetSaveFiles()[i].GetFileName());
 		}
 	}
 }
 
 void MainMenu::PrintFilePageChoices() {
 	if (MainMenu::IsPrevPagePossible()) {
-		std::cout << "Previous Page: " << InputKeys::PREV_PAGE;
+		Prompter::Print("Previous Page: " + std::string{ InputKeys::PREV_PAGE });
 	}
 
 	if (MainMenu::IsPrevPagePossible() && MainMenu::IsNextPagePossible()) {
-		std::cout << "\t";
+		Prompter::Print("\t");
 	}
 
 	if (MainMenu::IsNextPagePossible()) {
-		std::cout << "Next Page: " << InputKeys::NEXT_PAGE;
+		Prompter::Print("Next Page: " + std::string{ InputKeys::NEXT_PAGE });
 	}
 }
 
-void MainMenu::PrintOverwriteWithNewGameWarning() {
-	std::cout << "Restart progress?\n\nWARNING: You'll LOSE all progress you've made! "
-		<< "\nIf you want to back up your save, resume game and then choose 'SAVE GAME'."
-		<< "\n\nTHIS CANNOT BE UNDONE! Are you ABSOLUTELY sure you want to restart?";
-}
-
 void MainMenu::PrintOverwriteWithLoadWarning() {
-	int index = MainMenu::GetMinIndexOnPage() + Utils::CharNumToInt(Prompt::GetChoice()) - 1;
-	std::cout << "Overwrite current session with '" << SaveManager::GetSaveFiles().at(index).GetFileName()
-		<< "'?\n\nWARNING: You will lose ALL progress you have made so far!"
-		<< "\nIf you want to back up your save, resume game and then choose 'SAVE GAME'."
-		<< "\n\nTHIS CANNOT BE UNDONE! Are you ABSOLUTELY sure you want to load this file?";
+	int index = MainMenu::GetMinIndexOnPage() + Utils::CharNumToInt(Prompter::GetChoice()) - 1;
+
+	Prompter::Print("Overwrite current session with '" + SaveManager::GetSaveFiles().at(index).GetFileName());
+	Prompter::Print(Strings::WARNING_OVERWRITE_WITH_LOAD_GAME);
 }
 
 void MainMenu::PrintDeleteFileWarning() {
-	int index = Utils::CharNumToInt(Prompt::GetChoice()) - 1;
-	std::cout << "Are you sure you wish to delete file '" << SaveManager::GetSaveFiles().at(index).GetFileName()
-		<< "'?\nThis action CANNOT be undone!";
+	int index = Utils::CharNumToInt(Prompter::GetChoice()) - 1;
+	Prompter::Print("Are you sure you wish to delete file '"
+		+ SaveManager::GetSaveFiles().at(index).GetFileName() + "?\n"
+		+ "This action CANNOT be undone!");
 }
 
 void MainMenu::SetCurrentPageNumber(int page) {
@@ -340,7 +282,7 @@ int MainMenu::GetCurrentPageNumber() {
 }
 
 bool MainMenu::IsValidFileSelectScreenChoice() {
-	char choice = Prompt::GetChoice();
+	char choice = Prompter::GetChoice();
 
 	return choice == InputKeys::PREV_PAGE && MainMenu::IsPrevPagePossible()
 		|| choice == InputKeys::NEXT_PAGE && MainMenu::IsNextPagePossible()
@@ -348,12 +290,8 @@ bool MainMenu::IsValidFileSelectScreenChoice() {
 }
 
 bool MainMenu::IsValidFileSelection() {
-	int choice = Utils::CharNumToInt(Prompt::GetChoice());
+	int choice = Utils::CharNumToInt(Prompter::GetChoice());
+
 	return choice >= 1 && choice <= 9 
 		&& MainMenu::GetMinIndexOnPage() + choice - 1 <= MainMenu::GetMaxIndexOnPage();
-}
-
-void MainMenu::ShowInvalidMenuSelectMessage() {
-	std::cout << "INVALID MAIN MENU SELECTION. This should not happen. Please report"
-		<< " this error to the dev at " << GameInfo::DEV_EMAIL << "." << std::endl;
 }

@@ -19,27 +19,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Action.h" />
     <ClInclude Include="Diner.h" />
-    <ClInclude Include="GameInfo.h" />
+    <ClInclude Include="GameCharacter.h" />
+    <ClInclude Include="GameCharacters.h" />
+    <ClInclude Include="HomeStreet.h" />
     <ClInclude Include="House.h" />
+    <ClInclude Include="InputChecker.h" />
     <ClInclude Include="InputKeys.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="LocationKeys.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Navigator.h" />
     <ClInclude Include="PauseMenu.h" />
-    <ClInclude Include="Props.h" />
     <ClInclude Include="Rules.h" />
     <ClInclude Include="SaveFile.h" />
     <ClInclude Include="SaveManager.h" />
-    <ClInclude Include="Prompt.h" />
+    <ClInclude Include="Prompter.h" />
     <ClInclude Include="Strings.h" />
     <ClInclude Include="Thesaurus.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Action.cpp" />
     <ClCompile Include="Diner.cpp" />
+    <ClCompile Include="GameCharacter.cpp" />
+    <ClCompile Include="HomeStreet.cpp" />
     <ClCompile Include="House.cpp" />
+    <ClCompile Include="InputChecker.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Navigator.cpp" />
@@ -47,7 +54,7 @@
     <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="SaveFile.cpp" />
     <ClCompile Include="SaveManager.cpp" />
-    <ClCompile Include="Prompt.cpp" />
+    <ClCompile Include="Prompter.cpp" />
     <ClCompile Include="Thesaurus.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>

@@ -7,5 +7,6 @@ class House : public Location {
 		static void EnterKitchen();
 		static void EnterBathroom();
 		static void EnterBedroom();
+		static void EnterLivingRoom();
 };
 

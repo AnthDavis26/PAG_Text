@@ -8,7 +8,6 @@ class Utils {
         static std::string ToLowercase(const std::string& str);
         static std::string ToUppercase(const std::string& str);
         static int CharNumToInt(char ch);
-        static void ClearScreen();
         static void Trim(std::string&);
         static int RandomNumber(int min, int max);
 

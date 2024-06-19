@@ -3,85 +3,82 @@
 #include "Rules.h"
 #include "SaveManager.h"
 #include "LocationKeys.h"
-#include "Prompt.h"
+#include "Prompter.h"
 #include "Utils.h"
+#include "InputChecker.h"
 
 void PauseMenu::Start() {
-	if (Rules::SAVE_AT_PAUSE_MENU) {
+	if (Rules::CAN_SAVE_AT_PAUSE_MENU) {
 		SaveManager::SetAtPauseMenu();
 	}
 
-	std::cout << "PAUSE MENU" << std::endl;
-	std::cout << "1. Resume" << std::endl;
-	std::cout << "2. Save As" << std::endl;
-	std::cout << "3. Exit Game" << std::endl;
+	Prompter::Print(
+		"PAUSE MENU\n"
+		"1. Resume\n"
+		"2. Save As\n"
+		"3. Exit Game"
+	);
 
-	Prompt::PromptChoiceUntil([]() {
-		return Prompt::GetChoice() == '1' || Prompt::GetChoice() == '2'
-			|| Prompt::GetChoice() == '3';
-	});
-
-	Utils::ClearScreen();
-
-	switch (Prompt::GetChoice()) {
-		case ('1'):
-			PauseMenu::ResumeGame();
-			return;
-		case ('2'):
-			PauseMenu::SaveFileAs();
-			return;
-		case ('3'):
-			PauseMenu::ExitGame();
-			return;
-		default:
-			std::cout << "INVALID CHOICE (" << Prompt::GetChoice() << ")" << std::endl;
-	}
+	Prompter::PromptUntilValidCommand(
+		std::make_pair('1', PauseMenu::ResumeGame),
+		std::make_pair('2', PauseMenu::SaveFileAs),
+		std::make_pair('3', PauseMenu::ExitGame)
+	);
 }
 
 void PauseMenu::ResumeGame() {
-	Navigator::GoToSavedLocation();
+	Navigator::GoToCurrentLocation();
 }
 
 void PauseMenu::SaveFileAs() {
-	// Enter file name and press enter
-	std::cout << "Create new save file?" << std::endl;
-	Prompt::PromptYesOrNo();
+	Prompter::Print("Create new save file?");
+	Prompter::PromptUntilYesOrNo();
 
-	if (Prompt::PickedNo()) {
-		Utils::ClearScreen();
+	if (InputChecker::PickedNo()) {
 		Navigator::GoToPauseMenu();
 		return;
 	}
 
-	Utils::ClearScreen();
-	std::cout << "Save file as: (press ENTER to finish)" << std::endl;
-	std::string name = "";
-	std::cin >> name;
+	Prompter::Print("Save file as: (press ENTER to finish)");
+	std::string name = Prompter::InputText();
+	Utils::Trim(name);
+	Prompter::ClearScreen();
 
 	if (name.length() > Rules::MAX_FILE_NAME_LENGTH) {
-		std::cout << "File name " << name << " is too long (max name length is "
-			<< Rules::MAX_FILE_NAME_LENGTH << " characters). Please enter a shorter name."
-			<< std::endl;
-		PauseMenu::SaveFileAs();
-	}
+		Prompter::Print(
+			"File name " + name + " is too long (max name length is " 
+			+ std::to_string(Rules::MAX_FILE_NAME_LENGTH)
+			+ " characters). Please enter a shorter name."
+		);
 
-	Utils::ClearScreen();
+		PauseMenu::SaveFileAs();
+		return;
+	}
+	else if (name.empty()) {
+		Prompter::Print("File name cannot be blank.");
+		Prompter::Print("");
+		PauseMenu::SaveFileAs();
+		return;
+	}
 
 	SaveFile sf(SaveManager::GetCurrentSaveFile().GetDirectory(),
 		name, SaveManager::GetCurrentSaveFile().GetExtension());
 	
 	if (SaveManager::Contains(sf)) {
-		std::cout << "File '" << sf.GetFileName() << "' already exists. Overwrite?" << std::endl;
-		Prompt::PromptYesOrNo();
-		Utils::ClearScreen();
+		Prompter::Print("File '" + sf.GetFileName() + "' already exists. Overwrite?");
+		Prompter::PromptUntilYesOrNo();
+		Prompter::ClearScreen();
 
-		if (Prompt::PickedYes()) {
+		if (InputChecker::PickedYes()) {
 			SaveManager::DeleteSaveAtIndex(SaveManager::IndexOf(sf));
-		} else {
+		} 
+		else {
 			PauseMenu::SaveFileAs();
 			return;
 		}
 	}
+
+	Prompter::ClearScreen();
 	SaveManager::CreateNewFile(sf);
 	Navigator::GoToPauseMenu();
 }

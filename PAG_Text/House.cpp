@@ -2,146 +2,133 @@
 #include <iostream>
 #include "SaveManager.h"
 #include "LocationKeys.h"
-#include "Prompt.h"
+#include "Prompter.h"
 #include "Utils.h"
 #include "InputKeys.h"
 #include "Rules.h"
+#include "InputChecker.h"
+#include "GameCharacters.h"
 
 void House::Start() {
-	if (Rules::SAVE_AT_HOUSE) {
-		SaveManager::SetAtHouse();
-	}
-
-	std::cout << "In house." << std::endl;
-	std::cout << "\n'I am faced with a difficult decision: what do I do next?'" << std::endl;
-	std::cout << "\n" << InputKeys::HOUSE_CHOICE_GOTO_KITCHEN << ". Go to the kitchen" << std::endl;
-	std::cout << InputKeys::HOUSE_CHOICE_GOTO_BEDROOM << ". Go to the bedroom" << std::endl;
-	std::cout << InputKeys::HOUSE_CHOICE_GOTO_BATHROOM << ". Go to the bathroom" << std::endl;
-	std::cout << "Press P to pause." << std::endl;
-
-	Prompt::PromptChoiceUntil([]() {
-		return Prompt::GetChoice() == InputKeys::HOUSE_CHOICE_GOTO_KITCHEN
-			|| Prompt::GetChoice() == InputKeys::HOUSE_CHOICE_GOTO_BEDROOM
-			|| Prompt::GetChoice() == InputKeys::HOUSE_CHOICE_GOTO_BATHROOM
-			|| Prompt::GetChoice() == 'p';
-	});
-
-	Utils::ClearScreen();
-
-	switch (Prompt::GetChoice()) {
-		case (InputKeys::HOUSE_CHOICE_GOTO_KITCHEN):
-			Navigator::GoToHouseKitchen();
-			return;
-		case (InputKeys::HOUSE_CHOICE_GOTO_BEDROOM):
-			Navigator::GoToHouseBedroom();
-			return;
-		case (InputKeys::HOUSE_CHOICE_GOTO_BATHROOM):
-			Navigator::GoToHouseBathroom();
-			return;
-		case ('p'):
-			Navigator::GoToPauseMenu();
-			return;
-		default:
-			std::cout << "INVALID CHOICE (" << Prompt::GetChoice() << ")" << std::endl;
-	}
+	House::EnterBedroom();
 }
 
 void House::EnterKitchen() {
-	std::cout << "I wanted to go to the bedroom, but I'm in the kitchen now." << std::endl;
+	Prompter::SceneTitle("George's Kitchen");
 
-	if (SaveManager::AteTrash()) {
-		std::cout << "The trash is gone, but I still smell it somehow." << std::endl;
-	} else {
-		std::cout << "Hm, the trash is full." << std::endl;
+	if (Rules::CAN_SAVE_AT_HOUSE_KITCHEN) {
+		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_KITCHEN);
 	}
 
-	std::cout << "\nWhat should I do?" << std::endl;
-	std::cout << "1. Go to the bedroom" << std::endl;
-	std::cout << "2. Go to the bathroom" << std::endl;
-	std::cout << "3. ENTER PROMPT" << std::endl;
-	std::cout << "Press P to pause." << std::endl;
+	std::string GeorgeDialogue = 
+		"I wanted to go to the bedroom, but I'm in the kitchen now.\n";
 
-	Prompt::PromptChoiceUntil([]() {
-		return Prompt::GetChoice() == '1' || Prompt::GetChoice() == '2'
-			|| Prompt::GetChoice() == '3'
-			|| Prompt::GetChoice() == 'p';
-	});
+	Navigator::SetCurrentLocationKey(LocationKeys::HOUSE_KITCHEN);
 
-	Utils::ClearScreen();
-
-	switch (Prompt::GetChoice()) {
-		case ('1'):
-			Navigator::GoToHouseBedroom();
-			return;
-		case ('2'):
-			Navigator::GoToHouseBathroom();
-			return;
-		case ('3'):
-			Prompt::CustomPrompt();
-			Navigator::GoToHouseKitchen();
-			return;
-		case ('p'):
-			Navigator::GoToPauseMenu();
-			return;
-		default:
-			std::cout << "Invalid choice made." << std::endl;
+	if (SaveManager::AteHouseKitchenTrash()) {
+		GeorgeDialogue += "The trash is gone, but I still smell it somehow.\n";
+	} 
+	else {
+		GeorgeDialogue += "Hm, the trash is full. ";
 	}
+
+	GeorgeDialogue += "What should I do?";
+	GameCharacters::GEORGE.Speak(GeorgeDialogue);
+
+	Prompter::Print(
+		"1. Go to the bedroom\n"
+		"2. Go to the bathroom\n"
+		"3. Go to the living room"
+	);
+
+	Prompter::ShowDefaultControls();
+
+	Prompter::PromptUntilValidCommand(
+		std::make_pair('1', Navigator::GoToHouseBedroom),
+		std::make_pair('2', Navigator::GoToHouseBathroom),
+		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+	);
 }
 
 void House::EnterBedroom() {
-	std::cout << "Bedroom's fine, though I could swear I intended to go to kitchen." << std::endl;
-	std::cout << "\nLet me figure out how to proceed..." << std::endl;
-	std::cout << "1. Go to the bathroom" << std::endl;
-	std::cout << "2. Go to the kitchen" << std::endl;
-	std::cout << "Press P to pause." << std::endl;
+	Prompter::SceneTitle("George's Bedroom");
 
-	Prompt::PromptChoiceUntil([]() {
-		return Prompt::GetChoice() == '1' || Prompt::GetChoice() == '2'
-			|| Prompt::GetChoice() == 'p';
-	});
-
-	Utils::ClearScreen();
-
-	switch (Prompt::GetChoice()) {
-		case ('1'):
-			Navigator::GoToHouseBathroom();
-			return;
-		case ('2'):
-			Navigator::GoToHouseKitchen();
-			return;
-		case ('p'):
-			Navigator::GoToPauseMenu();
-			return;
-		default:
-			std::cout << "Invalid choice made." << std::endl;
+	if (Rules::CAN_SAVE_AT_HOUSE_BEDROOM) {
+		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_BEDROOM);
 	}
+
+	GameCharacters::GEORGE.Speak(
+		"I'm fine here in my bedroom, but I'd rather be in the kitchen.\n"
+		"Let me figure out how to proceed..."
+	);
+
+	Prompter::Print(
+		"1. Go to the kitchen\n"
+		"2. Go to the bathroom\n"
+		"3. Go to the living room"
+	);
+
+	Prompter::ShowDefaultControls();
+
+	Prompter::PromptUntilValidCommand(
+		std::make_pair('1', Navigator::GoToHouseKitchen),
+		std::make_pair('2', Navigator::GoToHouseBathroom),
+		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+	);
+}
+
+void House::EnterLivingRoom() {
+	Prompter::SceneTitle("George's Living Room");
+
+	if (Rules::CAN_SAVE_AT_HOUSE_LIVING_ROOM) {
+		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_LIVING_ROOM);
+	}
+
+	GameCharacters::GEORGE.Speak(
+		"It's not much of a living room, more of an existing room."
+	);
+
+	Prompter::Print(
+		"1. Go to the kitchen\n"
+		"2. Go to the bathroom\n"
+		"3. Go to the bedroom\n"
+		"4. Go outside"
+	);
+
+	Prompter::ShowDefaultControls();
+
+	Prompter::PromptUntilValidCommand(
+		std::make_pair('1', Navigator::GoToHouseKitchen),
+		std::make_pair('2', Navigator::GoToHouseBathroom),
+		std::make_pair('3', Navigator::GoToHouseBedroom),
+		std::make_pair('4', Navigator::GoToHomeStreet)
+	);
+
 }
 
 void House::EnterBathroom() {
-	std::cout << "What am I doing here? I want to go to the bedroom." << std::endl;
-	std::cout << "\nI'm so confused. Now what?" << std::endl;
-	std::cout << "1. Go to the kitchen" << std::endl;
-	std::cout << "2. Go to the bedroom" << std::endl;
-	std::cout << "Press P to pause." << std::endl;
+	Prompter::SceneTitle("George's Bathroom");
 
-	Prompt::PromptChoiceUntil([]() {
-		return Prompt::GetChoice() == '1' || Prompt::GetChoice() == '2'
-			|| Prompt::GetChoice() == 'p';
-	});
-
-	Utils::ClearScreen();
-
-	switch (Prompt::GetChoice()) {
-		case ('1'):
-			Navigator::GoToHouseKitchen();
-			return;
-		case ('2'):
-			Navigator::GoToHouseBedroom();
-			return;
-		case ('p'):
-			Navigator::GoToPauseMenu();
-			return;
-		default:
-			std::cout << "Invalid choice made." << std::endl;
+	if (Rules::CAN_SAVE_AT_HOUSE_BATHROOM) {
+		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_BATHROOM);
 	}
+
+	GameCharacters::GEORGE.Speak(
+		"What am I doing here? I want to go to the bedroom.\n"
+		"I'm so confused. Now what?"
+	);
+
+	Prompter::Print(
+		"1. Go to the bedroom\n"
+		"2. Go to the kitchen\n"
+		"3. Go to the living room"
+	);
+
+	Prompter::ShowDefaultControls();
+
+	Prompter::PromptUntilValidCommand(
+		std::make_pair('1', Navigator::GoToHouseBedroom),
+		std::make_pair('2', Navigator::GoToHouseKitchen),
+		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+	);
 }
