@@ -11,4 +11,4 @@ For this project, I will start with the following as its foundation:
 I'll start with a prototype. I don't have a concrete plan for the flow of the game.
 
 ### What is with that title?
-Frankly, I don't know. I played [Game Dev Tycoon](https://www.greenheartgames.com/app/game-dev-tycoon/) and I chose to "create" a post apocalypse-based game. I started the title with "Post-Apocalyptic" and after a few seconds of consideration, arbitrarily ended the title with "George." I thought it was funny for some reason, and it stuck with me.
+I played [Game Dev Tycoon](https://www.greenheartgames.com/app/game-dev-tycoon/) and I chose to "create" a post apocalypse-based game. I started the title with "Post-Apocalyptic" and after a few seconds of consideration, arbitrarily ended the title with "George." I thought it was funny for some reason, and it stuck with me.
