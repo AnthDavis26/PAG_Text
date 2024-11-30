@@ -21,9 +21,6 @@
     <ClInclude Include="InputKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Location.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LocationKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -66,9 +63,6 @@
     <ClInclude Include="InputChecker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Action.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HomeStreet.h">
       <Filter>Locations</Filter>
     </ClInclude>
@@ -78,11 +72,14 @@
     <ClInclude Include="GameCharacters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Locations</Filter>
+    </ClInclude>
+    <ClInclude Include="GameActor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Location.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Navigator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,13 +116,16 @@
     <ClCompile Include="InputChecker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Action.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HomeStreet.cpp">
       <Filter>Locations</Filter>
     </ClCompile>
     <ClCompile Include="GameCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Locations</Filter>
+    </ClCompile>
+    <ClCompile Include="GameActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
