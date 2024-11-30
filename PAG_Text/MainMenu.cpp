@@ -10,6 +10,7 @@
 #include "Rules.h"
 #include "Strings.h"
 #include "InputChecker.h"
+#include "GameCharacters.h"
 
 int MainMenu::currentPageNumber;
 int MainMenu::maxPossibleIndex;
@@ -32,11 +33,11 @@ void MainMenu::Start() {
 	);
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair( '1', MainMenu::ResumeGame),
-		std::make_pair( '2', MainMenu::NewGame),
-		std::make_pair( '3', MainMenu::LoadGame),
-		std::make_pair( '4', MainMenu::DeleteFilesScreen),
-		std::make_pair( '5', MainMenu::ExitGame)
+		CMD('1', MainMenu::ResumeGame),
+		CMD('2', MainMenu::NewGame),
+		CMD('3', MainMenu::LoadGame),
+		CMD('4', MainMenu::DeleteFilesScreen),
+		CMD('5', MainMenu::ExitGame)
 	);
 }
 
@@ -86,8 +87,7 @@ void MainMenu::LoadGame() {
 
 		SaveManager::OverwriteCurrentSaveFile(SaveManager::GetSaveFiles().at(index));
 		Navigator::GoToSavedLocation();
-	} 
-	else {
+	} else {
 		switch (Prompter::GetChoice()) {
 			case InputKeys::PREV_PAGE:
 				MainMenu::TurnPageBack();
@@ -130,8 +130,7 @@ void MainMenu::DeleteFilesScreen() {
 
 		MainMenu::ResetFileSelectPage();
 		MainMenu::DeleteFilesScreen();
-	} 
-	else {
+	} else {
 		switch (Prompter::GetChoice()) {
 			case InputKeys::PREV_PAGE:
 				MainMenu::TurnPageBack();
@@ -167,8 +166,7 @@ void MainMenu::TurnPageBack() {
 
 	if (MainMenu::GetMinIndexOnPage() < 0) {
 		MainMenu::ResetFileSelectPage();
-	} 
-	else {
+	} else {
 		MainMenu::SetMaxIndexOnPage(MainMenu::GetMinIndexOnPage() + MainMenu::MAX_FILES_ON_SELECT_SCREEN - 1);
 		MainMenu::SetCurrentPageNumber(MainMenu::GetCurrentPageNumber() - 1);
 	}
@@ -194,8 +192,7 @@ void MainMenu::PrintSaveFiles() {
 
 	if (SaveManager::GetSaveFiles().empty()) {
 		Prompter::Print("No save files found.");
-	} 
-	else {
+	} else {
 		int end = MainMenu::GetMaxIndexOnPage() - MainMenu::GetMinIndexOnPage() + 1;
 
 		Prompter::Print("Enter choice from 1 to " + std::to_string(end) + ".");
