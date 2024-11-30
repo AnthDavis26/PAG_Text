@@ -7,6 +7,8 @@
 #include "Navigator.h"
 #include "InputChecker.h"
 
+#define CMD std::make_pair
+
 class Prompter {
 public:
     static void PromptChoice();
@@ -42,8 +44,7 @@ public:
 
         if (Prompter::GetChoice() != InputKeys::TEXT_ENTRY) {
             Prompter::ClearScreen();
-        }
-        else {
+        } else {
             Prompter::Print("");
         }
 

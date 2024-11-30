@@ -20,9 +20,9 @@ void PauseMenu::Start() {
 	);
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', PauseMenu::ResumeGame),
-		std::make_pair('2', PauseMenu::SaveFileAs),
-		std::make_pair('3', PauseMenu::ExitGame)
+		CMD('1', PauseMenu::ResumeGame),
+		CMD('2', PauseMenu::SaveFileAs),
+		CMD('3', PauseMenu::ExitGame)
 	);
 }
 
@@ -53,8 +53,7 @@ void PauseMenu::SaveFileAs() {
 
 		PauseMenu::SaveFileAs();
 		return;
-	}
-	else if (name.empty()) {
+	} else if (name.empty()) {
 		Prompter::Print("File name cannot be blank.");
 		Prompter::Print("");
 		PauseMenu::SaveFileAs();
@@ -71,8 +70,7 @@ void PauseMenu::SaveFileAs() {
 
 		if (InputChecker::PickedYes()) {
 			SaveManager::DeleteSaveAtIndex(SaveManager::IndexOf(sf));
-		} 
-		else {
+		} else {
 			PauseMenu::SaveFileAs();
 			return;
 		}
