@@ -2,6 +2,6 @@
 #include "GameCharacter.h"
 
 namespace GameCharacters {
-	static const GameCharacter GEORGE("George");
-	static const GameCharacter DINER_OWNER("Diner Owner");
+	static GameCharacter GEORGE("George", "Male", 41, 1000);
+	static GameCharacter DINER_OWNER("Diner Owner", "Unknown", -1, 200);
 }
