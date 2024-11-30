@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Action.h" />
     <ClInclude Include="Diner.h" />
+    <ClInclude Include="GameActor.h" />
     <ClInclude Include="GameCharacter.h" />
     <ClInclude Include="GameCharacters.h" />
     <ClInclude Include="HomeStreet.h" />
@@ -41,8 +41,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Action.cpp" />
     <ClCompile Include="Diner.cpp" />
+    <ClCompile Include="GameActor.cpp" />
     <ClCompile Include="GameCharacter.cpp" />
     <ClCompile Include="HomeStreet.cpp" />
     <ClCompile Include="House.cpp" />
@@ -172,6 +172,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
