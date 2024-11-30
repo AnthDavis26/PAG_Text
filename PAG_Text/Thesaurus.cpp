@@ -2,12 +2,12 @@
 
 std::unordered_set<std::string> Thesaurus::eatSynonyms = {
 	"eat", "devour", "ingest", "partake", "consume", "indulge", "inhale", "swallow",
-	"chew", "absorb"
+	"chew", "absorb", "wolf down"
 };
 
 std::unordered_set<std::string> Thesaurus::trashSynonyms = {
 	"trash", "garbage", "filth", "rubbish", "waste", "litter", "junk",
-	"detritus"
+	"detritus", "scum", "debris", "junk", "scraps"
 };
 
 bool Thesaurus::IsEatSynonym(const std::string& str) {
