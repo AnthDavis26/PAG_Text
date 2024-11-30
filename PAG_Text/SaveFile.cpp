@@ -164,8 +164,7 @@ void SaveFile::OpenFile() {
 
     if (std::filesystem::exists(GetFullPath())) {
         file->open(GetFullPath(), std::ios::in | std::ios::out | std::ios::binary);
-    } 
-    else {
+    } else {
         std::filesystem::create_directories(directory);
         file->open(GetFullPath(), std::ios::out | std::ios::binary);
         file->close();  // Close the file to reopen it in read/write mode
