@@ -3,6 +3,7 @@
 #include "SaveManager.h"
 #include "Strings.h"
 #include "Thesaurus.h"
+#include "GameCharacters.h"
 
 bool InputChecker::ChoiceMatchesCommands(const std::unordered_map<char, std::function<void()>>& validCommands) {
 	return validCommands.find(Prompter::GetChoice()) != validCommands.end();
@@ -41,8 +42,7 @@ bool InputChecker::IsCommandEatTrash() {
 			}
 
 			substring.clear();
-		}
-		else {
+		} else {
 			substring += ch;
 		}
 	}
@@ -52,36 +52,29 @@ bool InputChecker::IsCommandEatTrash() {
 
 void InputChecker::ProcessCustomCommand() {
 	if (Prompter::GetTextCommand().empty()) {
-		Prompter::Print("Eh, never mind.");
-	}
-	else if (Navigator::AtHouseKitchen()) {
+		GameCharacters::GEORGE.Speak("Eh, never mind.");
+	} else if (Navigator::AtHouseKitchen()) {
 		if (Prompter::GetTextCommand() == "take out trash"
 			|| Prompter::GetTextCommand() == "take out the trash") {
 			if (SaveManager::AteHouseKitchenTrash()) {
-				Prompter::Print("But there's no trash to be taken out. Weird...");
+				GameCharacters::GEORGE.Speak("But there's no trash to be taken out. Weird...");
+			} else {
+				GameCharacters::GEORGE.Speak("Nah, I'm too irresponsible to do that.");
 			}
-			else {
-				Prompter::Print("Nah, I'm too irresponsible to do that.");
-			}
-		}
-		else if (InputChecker::IsCommandEatTrash()) {
+		} else if (InputChecker::IsCommandEatTrash()) {
 			if (SaveManager::AteHouseKitchenTrash()) {
 				Prompter::Print(Strings::ALREADY_ATE_TRASH);
-			}
-			else {
+			} else {
 				Prompter::Print(Strings::ATE_TRASH);
 				SaveManager::SetAteHouseKitchenTrash();
 			}
-		}
-		else {
+		} else {
 			Prompter::ShowInvalidTextResponse();
 			Prompter::Print("");
 		}
-	}
-	else if (InputChecker::IsCommandEatTrash()) {
-		Prompter::Print("There is no sweet, delicious trash for me to eat around here.");
-	}
-	else {
+	} else if (InputChecker::IsCommandEatTrash()) {
+		GameCharacters::GEORGE.Speak("There is no sweet, delicious trash for me to eat around here.");
+	} else {
 		Prompter::ShowInvalidTextResponse();
 		Prompter::Print("");
 	}
