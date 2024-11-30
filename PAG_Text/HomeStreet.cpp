@@ -20,14 +20,14 @@ void HomeStreet::Start() {
 	GameCharacters::GEORGE.Speak("I'm going to grow so many freckles.");
 
 	Prompter::Print(
-		"1. Go inside the house\n"
-		"2. Walk to diner"
+		"1. Go inside your house\n"
+		"2. Walk to the diner"
 	);
 
 	Prompter::ShowDefaultControls();
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', Navigator::GoToHouseLivingRoom),
-		std::make_pair('2', Navigator::GoToDiner)
+		CMD('1', Navigator::GoToHouseLivingRoom),
+		CMD('2', Navigator::GoToDiner)
 	);
 }

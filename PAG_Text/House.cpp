@@ -9,12 +9,14 @@
 #include "InputChecker.h"
 #include "GameCharacters.h"
 
+#define GEORGE GameCharacters::GEORGE
+
 void House::Start() {
 	House::EnterBedroom();
 }
 
 void House::EnterKitchen() {
-	Prompter::SceneTitle("George's Kitchen");
+	Prompter::SceneTitle(GEORGE.GetName() + "'s Kitchen");
 
 	if (Rules::CAN_SAVE_AT_HOUSE_KITCHEN) {
 		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_KITCHEN);
@@ -27,13 +29,12 @@ void House::EnterKitchen() {
 
 	if (SaveManager::AteHouseKitchenTrash()) {
 		GeorgeDialogue += "The trash is gone, but I still smell it somehow.\n";
-	} 
-	else {
+	} else {
 		GeorgeDialogue += "Hm, the trash is full. ";
 	}
 
 	GeorgeDialogue += "What should I do?";
-	GameCharacters::GEORGE.Speak(GeorgeDialogue);
+	GEORGE.Speak(GeorgeDialogue);
 
 	Prompter::Print(
 		"1. Go to the bedroom\n"
@@ -44,20 +45,20 @@ void House::EnterKitchen() {
 	Prompter::ShowDefaultControls();
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', Navigator::GoToHouseBedroom),
-		std::make_pair('2', Navigator::GoToHouseBathroom),
-		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+		CMD('1', Navigator::GoToHouseBedroom),
+		CMD('2', Navigator::GoToHouseBathroom),
+		CMD('3', Navigator::GoToHouseLivingRoom)
 	);
 }
 
 void House::EnterBedroom() {
-	Prompter::SceneTitle("George's Bedroom");
+	Prompter::SceneTitle(GEORGE.GetName() + "'s Bedroom");
 
 	if (Rules::CAN_SAVE_AT_HOUSE_BEDROOM) {
 		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_BEDROOM);
 	}
 
-	GameCharacters::GEORGE.Speak(
+	GEORGE.Speak(
 		"I'm fine here in my bedroom, but I'd rather be in the kitchen.\n"
 		"Let me figure out how to proceed..."
 	);
@@ -71,21 +72,21 @@ void House::EnterBedroom() {
 	Prompter::ShowDefaultControls();
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', Navigator::GoToHouseKitchen),
-		std::make_pair('2', Navigator::GoToHouseBathroom),
-		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+		CMD('1', Navigator::GoToHouseKitchen),
+		CMD('2', Navigator::GoToHouseBathroom),
+		CMD('3', Navigator::GoToHouseLivingRoom)
 	);
 }
 
 void House::EnterLivingRoom() {
-	Prompter::SceneTitle("George's Living Room");
+	Prompter::SceneTitle(GEORGE.GetName() + "'s Living Room");
 
 	if (Rules::CAN_SAVE_AT_HOUSE_LIVING_ROOM) {
 		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_LIVING_ROOM);
 	}
 
-	GameCharacters::GEORGE.Speak(
-		"It's not much of a living room, more of an existing room."
+	GEORGE.Speak(
+		"It's not much of a living room."
 	);
 
 	Prompter::Print(
@@ -98,22 +99,22 @@ void House::EnterLivingRoom() {
 	Prompter::ShowDefaultControls();
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', Navigator::GoToHouseKitchen),
-		std::make_pair('2', Navigator::GoToHouseBathroom),
-		std::make_pair('3', Navigator::GoToHouseBedroom),
-		std::make_pair('4', Navigator::GoToHomeStreet)
+		CMD('1', Navigator::GoToHouseKitchen),
+		CMD('2', Navigator::GoToHouseBathroom),
+		CMD('3', Navigator::GoToHouseBedroom),
+		CMD('4', Navigator::GoToHomeStreet)
 	);
 
 }
 
 void House::EnterBathroom() {
-	Prompter::SceneTitle("George's Bathroom");
+	Prompter::SceneTitle(GEORGE.GetName() + "'s Bathroom");
 
 	if (Rules::CAN_SAVE_AT_HOUSE_BATHROOM) {
 		SaveManager::SetCurrentLocation(LocationKeys::HOUSE_BATHROOM);
 	}
 
-	GameCharacters::GEORGE.Speak(
+	GEORGE.Speak(
 		"What am I doing here? I want to go to the bedroom.\n"
 		"I'm so confused. Now what?"
 	);
@@ -127,8 +128,8 @@ void House::EnterBathroom() {
 	Prompter::ShowDefaultControls();
 
 	Prompter::PromptUntilValidCommand(
-		std::make_pair('1', Navigator::GoToHouseBedroom),
-		std::make_pair('2', Navigator::GoToHouseKitchen),
-		std::make_pair('3', Navigator::GoToHouseLivingRoom)
+		CMD('1', Navigator::GoToHouseBedroom),
+		CMD('2', Navigator::GoToHouseKitchen),
+		CMD('3', Navigator::GoToHouseLivingRoom)
 	);
 }
