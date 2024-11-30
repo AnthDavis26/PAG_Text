@@ -7,9 +7,11 @@
 
 class SaveManager {
 public:
-    static const SaveFile& GetCurrentSaveFile();
-    static const std::vector<SaveFile>& GetSaveFiles();
+    static SaveFile& GetCurrentSaveFile();
+    static std::vector<SaveFile>& GetSaveFiles();
     static bool AteHouseKitchenTrash();
+    static bool KilledDinerOwner();
+    static bool KilledDinerOwnerThenLeft();
     static bool StartedGame();
     static bool Contains(const SaveFile&);
     static int IndexOf(const SaveFile& sf);
@@ -20,6 +22,8 @@ public:
     static void SetAtMainMenu();
     static void SetAtPauseMenu();
     static void SetAteHouseKitchenTrash();
+    static void SetKilledDinerOwner(bool);
+    static void SetKilledDinerOwnerThenLeft(bool);
     static void SetAtHouse();
     static void SetAtDiner();
     static void SetStartedGame();
@@ -37,8 +41,11 @@ private:
     static std::vector<SaveFile> saveFiles;
     static SaveFile currentSaveFile;
     static int ADDRESS_CURRENT_LOCATION;
+    static int ADDRESS_KILLED_DINER_OWNER;
     static int ADDRESS_STARTED_GAME;
     static int FLAG_POS_STARTED_GAME;
     static int ADDRESS_ATE_HOUSE_TRASH;
     static int FLAG_POS_ATE_HOUSE_TRASH;
+    static int FLAG_POS_KILLED_DINER_OWNER;
+    static int FLAG_POS_KILLED_DINER_OWNER_THEN_LEFT;
 };
