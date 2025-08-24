@@ -66,8 +66,10 @@ void MainMenu::NewGame() {
 void MainMenu::LoadGame() {
 	SaveManager::InitSaveFiles();
 	Prompter::Print("Load Save File");
+	Prompter::Print("");
 	MainMenu::PrintSaveFiles();
-	Prompter::Print("\nReturn: " + std::string{ InputKeys::RETURN });
+	Prompter::Print("");
+	Prompter::Print("Return: " + std::string{ InputKeys::RETURN });
 	MainMenu::PrintFilePageChoices();
 	Prompter::Print("");
 	Prompter::PromptChoiceUntil(MainMenu::IsValidFileSelectScreenChoice);
@@ -76,7 +78,8 @@ void MainMenu::LoadGame() {
 	if (MainMenu::IsValidFileSelection()) {
 		int index = Utils::CharNumToInt(Prompter::GetChoice()) + MainMenu::GetMinIndexOnPage() - 1;
 		MainMenu::PrintOverwriteWithLoadWarning();
-		Prompter::Print("\n");
+		Prompter::Print("");
+		Prompter::Print("");
 		Prompter::PromptUntilYesOrNo();
 		Prompter::ClearScreen();
 
@@ -110,8 +113,10 @@ void MainMenu::LoadGame() {
 void MainMenu::DeleteFilesScreen() {
 	SaveManager::InitSaveFiles();
 	MainMenu::SetMaxPossibleIndex((int)SaveManager::GetSaveFiles().size() - 1);
-	Prompter::Print("Delete Save File\n");
+	Prompter::Print("Delete Save File");
+	Prompter::Print("");
 	MainMenu::PrintSaveFiles();
+	Prompter::Print("");
 	Prompter::Print("Return: " + std::string{ InputKeys::RETURN });
 	MainMenu::PrintFilePageChoices();
 	Prompter::Print("");
@@ -223,14 +228,15 @@ void MainMenu::PrintFilePageChoices() {
 void MainMenu::PrintOverwriteWithLoadWarning() {
 	int index = MainMenu::GetMinIndexOnPage() + Utils::CharNumToInt(Prompter::GetChoice()) - 1;
 
-	Prompter::Print("Overwrite current session with '" + SaveManager::GetSaveFiles().at(index).GetFileName());
+	Prompter::Print("Overwrite current session with '" + SaveManager::GetSaveFiles().at(index).GetFileName() + "'?");
+	Prompter::Print("");
 	Prompter::Print(Strings::WARNING_OVERWRITE_WITH_LOAD_GAME);
 }
 
 void MainMenu::PrintDeleteFileWarning() {
 	int index = Utils::CharNumToInt(Prompter::GetChoice()) - 1;
 	Prompter::Print("Are you sure you wish to delete file '"
-		+ SaveManager::GetSaveFiles().at(index).GetFileName() + "?\n"
+		+ SaveManager::GetSaveFiles().at(index).GetFileName() + "'?\n"
 		+ "This action CANNOT be undone!");
 }
 
