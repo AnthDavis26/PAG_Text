@@ -7,7 +7,7 @@
 
 void Diner::Start() {
 	Prompter::SceneTitle("Diner");
-	Prompter::Print("You're inside the local diner. It doesn't even have a proper name.\n");
+	Prompter::Print("You're inside the local diner. It has no name.\n");
 
 	GameCharacter& GCGeorge = GameCharacters::GEORGE;
 	GameCharacter& GCDinerOwner = GameCharacters::DINER_OWNER;
@@ -50,7 +50,7 @@ void Diner::Start() {
 			GameCharacter& GCDinerOwner = GameCharacters::DINER_OWNER;
 
 			if (!SaveManager::KilledDinerOwner()) {
-				GCGeorge.HitActor(GCDinerOwner, 99);			
+				GCGeorge.HitActor(GCDinerOwner, 100);	
 				
 				if (GCDinerOwner.GetHealth() > 0) {
 					GCDinerOwner.Speak("Ow, you hit me.");
